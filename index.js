@@ -56,6 +56,7 @@ function init(){
   app.get("/api/:serverId/serverInfo",(req,res)=>{
     var info = db.server.getServerInfo(req.params.serverId);
     if(info){
+      db.server.increaseAccessCount(info.id);
       sendJson(res,info);
     }
     else{
@@ -67,6 +68,7 @@ function init(){
     sendError(res,new Error("ACTION DUE TO HIGH TRAFFIC DISABLED!"));return;
     var info = db.request.getQueries(req.params.serverId);
     if(info){
+      db.server.increaseAccessCount(req.params.serverId);
       sendJson(res,{results:info});
     }
     else{
@@ -76,6 +78,7 @@ function init(){
 
   app.get("/api/:serverId/onlineHistory/:timespan?",(req,res)=>{
     if(db.server.getServer(req.params.serverId)){
+      db.server.increaseAccessCount(req.params.serverId);
       if(req.params.timespan){
         if(req.params.timespan=="today"){
           sendJson(res,{result:db.request.getPlayerOnlineHistory(req.params.serverId,1)});
@@ -103,6 +106,7 @@ function init(){
 
   app.get("/api/:serverId/playerGameTime/:timespan?",(req,res)=>{
     if(db.server.getServer(req.params.serverId)){
+      db.server.increaseAccessCount(req.params.serverId);
       if(req.params.timespan){
         if(req.params.timespan=="today"){
           sendJson(res,{result:db.request.getPlayerGameTime(req.params.serverId,1)});
@@ -128,6 +132,7 @@ function init(){
   });
   app.get("/api/:serverId/playerOnline",(req,res)=>{
     if(db.server.getServer(req.params.serverId)){
+      db.server.increaseAccessCount(req.params.serverId);
       sendJson(res,{onlineList:db.request.getPlayerGameTime(req.params.serverId,0)});
     }
     else{
