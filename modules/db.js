@@ -12,7 +12,8 @@ var db = new loki('./db/data.db', {
   autoload: true,
   autoloadCallback : databaseInitialize,
   autosave: true, 
-  autosaveInterval: 5000
+  autosaveInterval: 5000,
+  adapter: new loki.LokiPartitioningAdapter(new loki.LokiFsAdapter())
 });
 
 function databaseInitialize() {
