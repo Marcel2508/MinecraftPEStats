@@ -204,7 +204,7 @@ function apiStatus(){
   var q = db.getCollection("queryStatistics");
   var allServer = s.chain().find().data();
   var allQueryResult = q.chain().find().data();
-  r["ServerCount"]=allServer.lenght;
+  r["ServerCount"]=allServer.length;
   r["ServerList"]=allServer.map((e)=>{return {ip:e.ip,port:e.port,id:e.id,created:e.inserted,lastContact:e.lastContact,active:e.active};});
   r["queryCount"]=allQueryResult.length;
   return r;

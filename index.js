@@ -144,6 +144,7 @@ function init(){
   });
 
   app.post("/api/insertServer",(req,res)=>{
+    console.log(req.body);
     if(req.body.ip&&req.body.port){
       var exi=db.server.checkServerExist(req.body.ip,req.body.port);
       if(exi){
