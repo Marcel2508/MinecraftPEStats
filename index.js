@@ -56,7 +56,7 @@ function init(){
   app.get("/api/:serverId/serverInfo",(req,res)=>{
     var info = db.server.getServerInfo(req.params.serverId);
     if(info){
-      db.server.increaseAccessCount(info.id);
+      db.server.increaseAccessCount(req.params.serverId);
       sendJson(res,info);
     }
     else{
