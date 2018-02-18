@@ -1,0 +1,33 @@
+<!Doctype html>
+<html>
+  <head>
+    <script type="text/javascript" src="http://localhost:8010/embed/5n6y27bojds0ktm4.js"></script>
+    <script type="text/javascript">
+      /*function req(){
+        var request = new XMLHttpRequest();
+        request.open("POST","http://localhost:8010/api/insertServer");
+        request.setRequestHeader("content-type","application/json");
+        request.addEventListener('load', function(event) {
+          if (request.status >= 200 && request.status < 300) {
+              console.log(request.responseText);
+          } else {
+              console.warn(request.statusText, request.responseText);
+          }
+        });
+        request.send(JSON.stringify({ip:"a17852.leet.cc",port:"17852"}));
+      }*/
+
+      function gen(){
+        mcPlayerStats.makePlayerList("otable","week",10);
+        mcPlayerStats.makeOnlineChart("ocanvas","week");
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="gen();">TEST</button>
+    <br/><br/>
+    <table id="otable"></table>
+    <br/><br/>
+    <svg id="ocanvas"></svg>
+  </body>
+</html>
