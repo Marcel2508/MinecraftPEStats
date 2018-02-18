@@ -1,5 +1,5 @@
 (function(){
-  var API_SERVER="http://mcstat.sol4it.de";
+  var API_SERVER="https://mcstat.sol4it.de";
   var SERVER_ID = "%@SERVERID@%";
 
   var _makeRequest = function _makeRequest(apiurl,_cb){
