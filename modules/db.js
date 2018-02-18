@@ -206,7 +206,7 @@ function apiStatus(){
   var allServer = s.chain().find().data();
   var allQueryResult = q.chain().find().data();
   r["ServerCount"]=allServer.length;
-  r["ServerList"]=allServer.map((e)=>{return {ip:e.ip,port:e.port,id:e.id,created:e.inserted,lastContact:e.lastContact,active:e.active};});
+  r["ServerList"]=allServer.map((e)=>{return {ip:e.ip,port:e.port,id:e.id,created:e.inserted,lastContact:e.lastContact,active:e.active,apiRequests:e.apiCount,lastApiRequest:new Date(e.lastApiCount).toISOString()};});
   r["queryCount"]=allQueryResult.length;
   return r;
 }
