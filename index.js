@@ -49,6 +49,10 @@ function init(){
     }
   });
 
+  app.get("/api/apiStatus",(req,res)=>{
+    sendJson(res,db.apiStatus());
+  });
+
   app.get("/api/:serverId/serverInfo",(req,res)=>{
     var info = db.server.getServerInfo(req.params.serverId);
     if(info){

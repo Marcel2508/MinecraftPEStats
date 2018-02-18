@@ -197,6 +197,19 @@ function getQueries(id){
   return r;
 }
 
+function apiStatus(){
+
+  var r = {};
+  var s = db.getCollection("server");
+  var q = db.getCollection("queryStatistics");
+  var allServer = s.chain().find().data();
+  var allQueryResult = q.chain().find().data();
+  r["ServerCount"]=allServer.lenght;
+  r["ServerList"]=allServer.map((e)=>{return {ip:e.ip,port:e.port,id:e.id,created:e.inserted,lastContact:e.lastContact,active:e.active};});
+  r["queryCount"]=allQueryResult.length;
+  return r;
+}
+
 module.exports = {
   init:function(_cb){
     if(initFn)_cb();
@@ -220,5 +233,6 @@ module.exports = {
     getQueries:getQueries,
     getPlayerGameTime:getPlayerGameTime,
     getPlayerOnlineHistory:getPlayerOnlineHistory
-  }
+  },
+  apiStatus:apiStatus
 };
