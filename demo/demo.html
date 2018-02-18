@@ -1,0 +1,20 @@
+<!Doctype html>
+<html>
+  <head>
+    <script type="text/javascript" src="https://mcstat.sol4it.de/embed/405wf67jdt02lz0.js"></script>
+    <script type="text/javascript">
+      function gen(){
+        mcPlayerStats.makePlayerList("otable","today",10);
+        mcPlayerStats.makeOnlineChart("ocanvas","today");
+      }
+    </script>
+  </head>
+  <body>
+    <br/><br/>
+    <table id="otable"></table>
+    <br/><br/>
+    Player's history:
+    <svg id="ocanvas" style="max-width:500px;"></svg>
+    <script type="text/javascript">gen();</script>
+  </body>
+</html>
