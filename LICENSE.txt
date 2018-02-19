@@ -1,1 +1,2 @@
-Copyright 2018 Marcel Aust (sol4it.de)
+Copyright ©2018 Marcel Aust (sol4it.de)
+Usage and Forks are only allowed with explicit permission.
