@@ -88,7 +88,7 @@ function getServerIpPort(id){
 }
 
 function checkServerExist(ip,port){
-  return db.getCollection("server").findOne({ip:ip,port:port});
+  return db.getCollection("server").findOne({"$and":[{ip:ip},{port:port}]});
 }
 
 function reEnableServer(id){
@@ -145,7 +145,7 @@ function getPlayerOnlineHistory(id,timespan){
   }
   else{//today,week,month
     return col.chain()
-              .find({"serverId":id,timestamp:{$gte:_getDate(timespan)}})
+              .find({"$and":[{"serverId":id},{timestamp:{"$gte":_getDate(timespan)}}]})
               .simplesort("timestamp").data()
               .map((e)=>{return {count:e.playerCount,timestamp:e.timestamp};});
   }
@@ -166,7 +166,7 @@ function getPlayerGameTime(id,timespan){
   }
   else{
     var data = col.chain()
-              .find({"serverId":id,timestamp:{$gte:_getDate(timespan)}})
+              .find({"$and":[{"serverId":id},{timestamp:{$gte:_getDate(timespan)}}]})
               .simplesort("timestamp").data().map((e)=>{return {timestamp:e.timestamp,players:e.players};});
     var playerData = {};
     data.forEach((d)=>{
