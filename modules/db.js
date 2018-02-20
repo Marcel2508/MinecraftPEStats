@@ -198,17 +198,40 @@ function getQueries(id){
   return r;
 }
 
-function apiStatus(){
+function _formatSize(inp){
+  var prefix = ["B","KiB","MiB","GiB","TiB","PiB"];
+  var i=0;
+  while(inp/1024>1){
+    inp/=1024;i++;
+  }
+  return inp.toFixed(2)+" "+prefix[i];  
+}
 
+function apiStatus(){
   var r = {};
   var s = db.getCollection("server");
   var q = db.getCollection("queryStatistics");
   var allServer = s.chain().find().data();
   var allQueryResult = q.chain().find().data();
-  r["ServerCount"]=allServer.length;
-  r["ServerList"]=allServer.map((e)=>{return {ip:e.ip,port:e.port,id:e.id,created:e.inserted,lastContact:e.lastContact,active:e.active,apiRequests:e.apiCount,lastApiRequest:new Date(e.lastApiCount).toISOString()};});
+  r["serverCount"]=allServer.length;
+  r["serverList"]=allServer.map((e)=>{return {ip:e.ip,port:e.port,id:e.id,created:e.inserted,lastContact:e.lastContact,active:e.active,apiRequests:e.apiCount,lastApiRequest:new Date(e.lastApiCount).toISOString(),requestOrigins:e.requestOrigins};});
   r["queryCount"]=allQueryResult.length;
+  //DONT WORK FOR FOLDER... r["dbSize"]=_formatSize(fs.statSync("db/").size);
   return r;
+}
+
+function checkUpdateOrigin(serverId,origin){
+  var col = db.getCollection("server");
+  var sinfo = col.findOne({id:serverId});
+  if(sinfo.requestOrigins){
+    if(!sinfo.requestOrigins.find((e)=>{return e.toLowerCase()==origin.toLowerCase();})){
+      sinfo.requestOrigins.push(origin);
+    }
+  }
+  else{
+    sinfo.requestOrigins=[origin];
+  }
+  col.update(sinfo);
 }
 
 module.exports = {
@@ -227,7 +250,8 @@ module.exports = {
     checkServerExist:checkServerExist,
     getActiveServer:getActiveServer,
     cleanOfflineServer:cleanOfflineServer,
-    reEnableServer:reEnableServer
+    reEnableServer:reEnableServer,
+    checkUpdateOrigin:checkUpdateOrigin
   },
   request:{
     insertQuery:insertQuery,

@@ -26,6 +26,11 @@ function sendError(res,err){
   res.end();
 }
 
+function _saveOrigin(serverId,origin){
+  if(origin)
+    db.server.checkUpdateOrigin(serverId,origin);
+}
+
 function init(){
 
   app.use(express.static("frontend/"));
@@ -58,6 +63,7 @@ function init(){
     if(info){
       db.server.increaseAccessCount(req.params.serverId);
       sendJson(res,info);
+      _saveOrigin(req.params.serverId,req.get("origin"));
     }
     else{
       sendError(res,new Error("Invalid Server ID!"));
@@ -70,6 +76,7 @@ function init(){
     if(info){
       db.server.increaseAccessCount(req.params.serverId);
       sendJson(res,{results:info});
+      _saveOrigin(req.params.serverId,req.get("origin"));
     }
     else{
       sendError(res,new Error("Invalid Server ID!"));
@@ -92,11 +99,13 @@ function init(){
         else{
           sendError(res,new Error("Invalid timespan!"));
         }
+        _saveOrigin(req.params.serverId,req.get("origin"));
       }
       else{
         //TIMESPAN=0;
         var data = db.request.getPlayerOnlineHistory(req.params.serverId,0);
         sendJson(res,{result:data});
+        _saveOrigin(req.params.serverId,req.get("origin"));
       }
     }
     else{
@@ -120,10 +129,12 @@ function init(){
         else{
           sendError(res,new Error("Invalid timespan!"));
         }
+        _saveOrigin(req.params.serverId,req.get("origin"));
       }
       else{
         //TIMESPAN=0; -> TODAY
         sendJson(res,{result:db.request.getPlayerGameTime(req.params.serverId,1)});
+        _saveOrigin(req.params.serverId,req.get("origin"));
       }
     }
     else{
@@ -134,6 +145,7 @@ function init(){
     if(db.server.getServer(req.params.serverId)){
       db.server.increaseAccessCount(req.params.serverId);
       sendJson(res,{onlineList:db.request.getPlayerGameTime(req.params.serverId,0)});
+      _saveOrigin(req.params.serverId,req.get("origin"));
     }
     else{
       sendError(res,new Error("Invalid Server ID!"));
