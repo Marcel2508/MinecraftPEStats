@@ -85,7 +85,26 @@ class McstatDatabase extends Database{
     }
     getServer(serverId){
         return new Promise((_resolve,_reject)=>{
-            
+            this.serverCollection.findOne({"serverId":serverId},(err,server)=>{
+                if(err){
+                    _reject(err);
+                }
+                else{
+                    _resolve(server);
+                }
+            });
+        });
+    }
+    getServerByIpAndPort(ip,port){
+        return new Promise((_resolve,_reject)=>{
+            this.serverCollection.findOne({"$and":[{"ip":ip},{"port":port}]},(err,server)=>{
+                if(err){
+                    _reject(err);
+                }
+                else{
+                    _resolve(server);
+                }
+            });
         });
     }
 }
@@ -115,6 +134,24 @@ class ApiDatabase extends McstatDatabase{
                 }
                 else{
                     _resolve(nid);
+                }
+            });
+        });
+    }
+
+    getLastQuery(serverId){
+        return new Promise((_resolve,_reject)=>{
+            this.queryCollection.find({"serverId":serverId}).limit(1).sort({lastContact:-1}).toArray((err,result)=>{
+                if(err){
+                    _reject(err);
+                }
+                else{
+                    if(result&&result.length==1){
+                        _resolve(result[0]);
+                    }
+                    else{
+                        _resolve(null);
+                    }
                 }
             });
         });

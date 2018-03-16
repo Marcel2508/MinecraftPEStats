@@ -8,7 +8,7 @@ class Query{
         this.config = {
             "interval":config.interval||360000,
             "statusInterval":config.statusInterval||21600000,
-            "timeout":config.timeout||3000,
+            "timeout":config.timeout||3000,//NOT USED RN..?
             "mongoConnection":config.mongoConnection||null,
             "mongoDb":config.mongoDb||"mcstat",
             "setDisabledTimeout":config.setDisabledTimeout||24*60*60*1000,
@@ -17,32 +17,44 @@ class Query{
         this.db = new QueryDatabase(this.config.mongoConnection,this.config.mongoDb);
     }
     _registerCronJobs(){
-        this.checkCronJob = setInterval(this.doPingAll,this.config.interval);
-        this.statusCronJob = setInterval(this.doStatusCheckAll,this.config.statusInterval);
+        this.checkCronJob = setInterval(this.doPingAll.bind(this),this.config.interval);
+        this.statusCronJob = setInterval(this.doStatusCheckAll.bind(this),this.config.statusInterval);
         //RUN FIRST IMMEDIATELY.. BUT IGNORE ANY ERRORS...
         this.doPingAll();
         this.doStatusCheckAll();
     }
     static getServerQuery(ip,port){
         return new Promise((_resolve,_reject)=>{
-            gamedig.query({
-                type:"minecraftpe",
-                host:ip,
-                port:port
-            }).then(async (res)=>{
-                var d = {
-                    motd:res.name,
-                    playerCount:res.raw.numplayers,
-                    playerList:res.players.map((e)=>{return e.name;}),
-                    maxPlayerCount:res.raw.maxplayers,
-                    serverVersion:res.raw.version,
-                    plugins:res.raw.plugins
-                };
-                _resolve(d)
-            }).catch((err)=>{
-                err.code=112;
-                _reject(err);
-            });
+            try{
+                if(typeof ip == "string" && !isNaN(port)){
+                    gamedig.query({
+                        type:"minecraftpe",
+                        host:ip,
+                        port:port,
+                    }).then(async (res)=>{
+                        var d = {
+                            motd:res.name,
+                            playerCount:res.raw.numplayers,
+                            playerList:res.players.map((e)=>{return e.name;}),
+                            maxPlayerCount:res.raw.maxplayers,
+                            serverVersion:res.raw.version,
+                            plugins:res.raw.plugins
+                        };
+                        _resolve(d)
+                    }).catch((err)=>{
+                        //TO SET ERROR CODE..
+                        err = new Error(err);
+                        err.code=112;
+                        _reject(err);
+                    });
+                }
+                else{
+                    _reject(new Error("Invalid Port or IP format..."));
+                }
+            }
+            catch(ex){
+                _reject(ex);
+            }
         });
     }
     async doPingAll(){
@@ -75,7 +87,7 @@ class Query{
         }
         catch(exA){
             console.error("FATAL ERROR DURING PING:");
-            console.error(err);
+            console.error(exA);
         }
     }
     checkIsServerOverNoContactTime(serverLastContact){

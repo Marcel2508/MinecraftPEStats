@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const ApiDatabase=require("./db.js").ApiDatabase;
 const QueryLib = require("./query.js").Query;
@@ -35,8 +36,10 @@ class WebServer{
         }
     }
     _sendError(res,error,code=null){
+        console.error(error)
         var status = 500;
         if(code!==null){
+            error = new Error(error);
             error.code=code;
             status=400;
         }
@@ -53,6 +56,11 @@ class WebServer{
         .type("application/json")
         .send(this.config.useStructuredJson?JSON.stringify(data,null,2):JSON.stringify(data))
         .end();
+    }
+    registerMiddleware(){
+        //TODO: LATER WITH X-POWEREDBY this.app.use(helmet());
+        this.app.use(bodyParser.json({extended:true}));
+        this.app.use(cors());
     }
 }
 
@@ -92,10 +100,11 @@ class ApiServer extends WebServer{
         //FIXED TO THIS CLASS
         return new Promise((_resolve,_reject)=>{
             //TODO: ADD MIDDLEWARES...
-            this.app.use(helmet());
-            this.app.use(bodyParser.json({extended:true}));
+            super.registerMiddleware();
             //ROUTES 
-            this.app.get("/insertServer",this._insertServerHandler.bind(this));
+            this.app.post("/insertServer",this._insertServerHandler.bind(this));
+            this.app.get("/getServerInfo/:serverId",this._serverInfoHandler.bind(this));
+            this.app.get("/getLastQuery/:serverId",this._getLastQueryHandler.bind(this));
 
             //for Testing purpose...
             this.app.get("/ping",this._pingHandler.bind(this));
@@ -126,11 +135,6 @@ class ApiServer extends WebServer{
             try{
                 var existingServer = await this.db.getServerByIpAndPort(host,port);
                 if(existingServer){
-                    var result = await QueryLib.getServerQuery(host,port);
-                    var serverId = await this.db.insertNewServer(host,port,{motd:result.motd,maxPlayerCount:result.maxPlayerCount,serverVersion:result.serverVersion,plugins:result.plugins});
-                    this._sendJson(res,{status:"OK","serverId":serverId});
-                }
-                else {
                     if(existingServer.enabled){
                         this._sendError(res,new Error("Server already exists! ID: "+existingServer.serverId+", added: "+this._formatDate(existingServer.created)),3);
                     }
@@ -138,6 +142,11 @@ class ApiServer extends WebServer{
                         await this.db.reEnableServer(existingServer.serverId);
                         this._sendError(res,new Error("Server enabled again. ID: "+existingServer.serverId+", disabled on: "+this._formatDate(existingServer.disableTimestamp)),4);
                     }
+                }
+                else {
+                    var result = await QueryLib.getServerQuery(host,port);
+                    var serverId = await this.db.insertNewServer(host,port,{motd:result.motd,maxPlayerCount:result.maxPlayerCount,serverVersion:result.serverVersion,plugins:result.plugins});
+                    this._sendJson(res,{status:"OK","serverId":serverId});
                 }
             }
             catch(ex){
@@ -151,6 +160,40 @@ class ApiServer extends WebServer{
         }
         else{
             this._sendError(res,new Error("Missing Parameters! serverHost and serverPort required!"),1);
+        }
+    }
+
+    async _serverInfoHandler(req,res){
+        try{
+            var serverId = req.params.serverId;
+            var server = await this.db.getServer(serverId);
+            if(server){
+                delete server._id;
+                this._sendJson(res,server);
+            }
+            else{
+                this._sendError(res,new Error("Invalid ServerID!"),1);
+            }
+        }
+        catch(ex){
+            this._sendError(res,ex);
+        }
+    }
+
+    async _getLastQueryHandler(req,res){
+        try{
+            var serverId = req.params.serverId;
+            var lastQuery = await this.db.getLastQuery(serverId);
+            if(lastQuery){
+                delete lastQuery._id;
+                this._sendJson(res,lastQuery);
+            }
+            else{
+                this._sendError(res,new Error("No Query yet.. Please wait a few minutes!"),1)
+            }
+        }
+        catch(ex){
+            this._sendError(res,ex);
         }
     }
     
