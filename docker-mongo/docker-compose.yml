@@ -1,0 +1,9 @@
+version: '2.1'
+services:
+  mongodb:
+    image: mongo
+    ports: 
+      - 27017:27017
+    restart: "no"
+    volumes:
+      - /home/marcel/docker-db:/data/db
