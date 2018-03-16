@@ -1,4 +1,5 @@
 const mongo = require("mongodb").MongoClient;
+const uniqid = require("uniqid");
 class Database{
     constructor(server_url,db){
         this.serverUrl = server_url;
@@ -82,13 +83,42 @@ class McstatDatabase extends Database{
             }
         });
     }
+    getServer(serverId){
+        return new Promise((_resolve,_reject)=>{
+            
+        });
+    }
 }
 
 class ApiDatabase extends McstatDatabase{
     constructor(...args){
         super(...args);
     }
-    
+    insertNewServer(serverHost,serverPort,serverInfoObject){
+        return new Promise((_resolve,_reject)=>{
+            var nid= uniqid();
+            this.serverCollection.insertOne({
+                serverId:nid,
+                ip:serverHost,
+                port:serverPort,
+                created:new Date(),
+                serverInfo:serverInfoObject,
+                lastContact:null,
+                lastApiRequest:null,
+                lastBannerRequest:null,
+                webOrigins:[],
+                active:true,
+                disableTimestamp:null
+            },(err)=>{
+                if(err){
+                    _reject(err);
+                }
+                else{
+                    _resolve(nid);
+                }
+            });
+        });
+    }
 }
 
 class QueryDatabase extends McstatDatabase{
@@ -106,11 +136,6 @@ class QueryDatabase extends McstatDatabase{
                     _resolve(res);
                 }
             });
-        });
-    }
-    getServer(serverId){
-        return new Promise((_resolve,_reject)=>{
-            
         });
     }
     insertQuery(queryResult){

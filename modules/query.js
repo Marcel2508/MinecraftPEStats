@@ -23,12 +23,12 @@ class Query{
         this.doPingAll();
         this.doStatusCheckAll();
     }
-    getServerQuery(ip,port){
+    static getServerQuery(ip,port){
         return new Promise((_resolve,_reject)=>{
             gamedig.query({
                 type:"minecraftpe",
-                host:con.ip,
-                port:con.port
+                host:ip,
+                port:port
             }).then(async (res)=>{
                 var d = {
                     motd:res.name,
@@ -51,7 +51,7 @@ class Query{
             await Promise.all(activeServer.map((server)=>{
                 return new Promise(async (_rs,_rj)=>{
                     try{
-                        var result = await this.getServerQuery(server.ip,server.port);
+                        var result = await Query.getServerQuery(server.ip,server.port);
                         var queryResult = {
                             id:uniqid(),
                             serverId:server.serverId,
@@ -91,7 +91,6 @@ class Query{
         }
         return false;
     }
-
 
     _doStatusCheckLastContact(activeServer){
         return Promise.all(activeServer.map((server)=>{

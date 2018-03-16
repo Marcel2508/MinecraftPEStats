@@ -25,11 +25,6 @@ const run = async function run(){
         await queryTask.start();
         console.log("Query Task started!")
 
-        setTimeout(()=>{
-            queryTask.stop();
-            api.close();
-            console.log("Should be closed!");
-        },2000);
     }
     catch(ex){
         console.error("ERROR STARTING API:");
