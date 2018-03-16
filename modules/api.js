@@ -6,6 +6,7 @@ const cors = require("cors");
 const moment = require("moment");
 
 const ApiDatabase=require("./db.js").ApiDatabase;
+const BannerDatabase = require("./db.js").BannerDatabase;
 const QueryLib = require("./query.js").Query;
 
 class WebServer{

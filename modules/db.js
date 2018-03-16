@@ -247,9 +247,14 @@ class QueryDatabase extends McstatDatabase{
     }
 }
 
+class BannerDatabase extends McstatDatabase{
+
+}
+
 module.exports = {
     Database:Database,
     McstatDatabase:McstatDatabase,
     ApiDatabase:ApiDatabase,
-    QueryDatabase:QueryDatabase
+    QueryDatabase:QueryDatabase,
+    BannerDatabase:BannerDatabase
 }
