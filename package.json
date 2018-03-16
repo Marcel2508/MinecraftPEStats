@@ -17,6 +17,7 @@
     "helmet": "^3.12.0",
     "moment": "^2.21.0",
     "mongodb": "^3.0.4",
+    "pureimage": "^0.1.4",
     "uniqid": "^4.1.1"
   }
 }

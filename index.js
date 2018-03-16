@@ -4,7 +4,8 @@ const QueryTask = require("./modules/query.js");
 const api = new ApiServer.ApiServer({
     "port":8080,
     "mongoConnection":"mongodb://localhost:27017",
-    "mongoDb":"mcstat"
+    "mongoDb":"mcstat",
+    "queryInterval":360000
 });
 
 const queryTask = new QueryTask.Query({

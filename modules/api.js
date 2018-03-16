@@ -3,6 +3,7 @@ const http = require("http");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const moment = require("moment");
 
 const ApiDatabase=require("./db.js").ApiDatabase;
 const QueryLib = require("./query.js").Query;
@@ -105,6 +106,8 @@ class ApiServer extends WebServer{
             this.app.post("/insertServer",this._insertServerHandler.bind(this));
             this.app.get("/getServerInfo/:serverId",this._serverInfoHandler.bind(this));
             this.app.get("/getLastQuery/:serverId",this._getLastQueryHandler.bind(this));
+            this.app.get("/getOnlineHistory/:serverId/:duration?",this._getOnlineHistoryHandler.bind(this));
+            this.app.get("/getPlayerMinuteCount/:serverId/:duration?",this._getPlayerMinuteCountHandler.bind(this));
 
             //for Testing purpose...
             this.app.get("/ping",this._pingHandler.bind(this));
@@ -191,6 +194,84 @@ class ApiServer extends WebServer{
             else{
                 this._sendError(res,new Error("No Query yet.. Please wait a few minutes!"),1)
             }
+        }
+        catch(ex){
+            this._sendError(res,ex);
+        }
+    }
+
+    _getPastDateForQuery(value,oDate){
+        var m = oDate?oDate:new Date();
+        var sinceDate = moment(m).subtract(1,"day").toDate();
+        switch(value){
+            case "month":
+                sinceDate=moment(m).subtract(1,"month").toDate();
+                break;
+            case "day":
+                sinceDate=moment(m).subtract(1,"day").toDate();
+                break;
+            case "hour":
+                sinceDate=moment(m).subtract(1,"hour").toDate();
+                break;
+            default:
+                sinceDate=moment(m).subtract(1,"day").toDate();
+        }
+        return sinceDate;
+    }
+
+    async _getOnlineHistoryHandler(req,res){
+        try{
+            var queryDate = this._getPastDateForQuery(req.params.duration);
+            var queries = await this.db.getQueriesUntilToday(req.params.serverId,queryDate);
+            var historyResult=queries.map((x)=>{return {timestamp:x.timestamp,playerCount:x.playerCount};});
+            this._sendJson(res,{playerData:historyResult});
+        }
+        catch(ex){
+            this._sendError(res,ex);
+        }
+    }
+
+    //WHEN THE USER IS MORE THAN 7.5 MINUTES NOT RECORDED, HE'S SUPPOSED TO BE OFFLINE...
+    _checkDurationIsInRealisticRange(last,akt){
+        if(akt-last>this.config.queryInterval*1.5){
+            return false;
+        }
+        return true;
+    }
+
+    //TODO: THIS FUNCTION NEEDS FURTHER TESTING IF WORKING LIKE PREDICTED...
+    async _getPlayerMinuteCountHandler(req,res){
+        try{
+            var queryDate = this._getPastDateForQuery(req.params.duration);
+            var queries = await this.db.getQueriesUntilToday(req.params.serverId,queryDate);
+            var playerHourCounter = {};
+            //FOR SHOULD BE FASTER... 
+            for(var i=0;i<queries.length;i++){
+                for(var j=0;j<queries[i].playerList.length;j++){
+                    if(playerHourCounter.hasOwnProperty(queries[i].playerList[j])){
+                        //IF USER IN RANGE
+                        if(this._checkDurationIsInRealisticRange(playerHourCounter[queries[i].playerList[j]].lastCheck,queries[i].timestamp)){
+                            //ADD COUNTER+SET NEW DATE
+                            playerHourCounter[queries[i].playerList[j]].count+=queries[i].timestamp-playerHourCounter[queries[i].playerList[j]].lastCheck;
+                            playerHourCounter[queries[i].playerList[j]].lastCheck=queries[i].timestamp;
+                        }
+                        else{
+                            //ELSE: ONLY SET NEW DATE
+                            playerHourCounter[queries[i].playerList[j]].lastCheck=queries[i].timestamp;
+                        }
+                    }
+                    else{
+                        //CREATE USER IN OBJECT..
+                        playerHourCounter[queries[i].playerList[j]]={
+                            count:0,
+                            lastCheck:queries[i].timestamp
+                        };
+                    }
+                }
+            }
+            //TRANSFORM AND SORT ARRAY
+            var playerNameCounterArray = Object.keys(playerHourCounter).map((x)=>{playerHourCounter[x].count=Math.round(playerHourCounter[x].count/(1000*60)); return Object.assign(playerHourCounter[x],{playerName:x});}).sort((a,b)=>{return b.count-a.count;});
+            this._sendJson(res,{playerData:playerNameCounterArray});
         }
         catch(ex){
             this._sendError(res,ex);

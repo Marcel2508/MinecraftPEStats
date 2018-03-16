@@ -34,9 +34,9 @@ class Query{
                     }).then(async (res)=>{
                         var d = {
                             motd:res.name,
-                            playerCount:res.raw.numplayers,
+                            playerCount:parseInt(res.raw.numplayers),
                             playerList:res.players.map((e)=>{return e.name;}),
-                            maxPlayerCount:res.raw.maxplayers,
+                            maxPlayerCount:parseInt(res.raw.maxplayers),
                             serverVersion:res.raw.version,
                             plugins:res.raw.plugins
                         };

@@ -156,6 +156,28 @@ class ApiDatabase extends McstatDatabase{
             });
         });
     }
+
+    getQueriesUntilToday(serverId,dateFrom){
+        return new Promise((_resolve,_reject)=>{
+            this.queryCollection.find({"$and":[{"serverId":serverId},{"timestamp":{"$gte":dateFrom}}]}).sort({"timestamp":1}).toArray((err,result)=>{
+                if(err){
+                    _reject(err);
+                }
+                else{
+                    if(result&&result.length>0){
+                        //DELETE INTERN ID, SO USER WONT SEE IT..
+                        result.forEach((x) => {
+                            delete x._id;
+                        });
+                        _resolve(result);
+                    }
+                    else{
+                        _reject(new Error("No recent Queries found!"));
+                    }
+                }
+            });
+        });
+    }
 }
 
 class QueryDatabase extends McstatDatabase{
