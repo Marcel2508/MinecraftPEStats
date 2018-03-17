@@ -2,10 +2,18 @@ const mongo = require("mongodb").MongoClient;
 const uniqid = require("uniqid");
 class Database{
     constructor(server_url,db){
-        this.serverUrl = server_url;
-        this.connection=null;
         this.dbName = db||"mcstat";
-        if(!this.serverUrl)throw new Error("Mongo Server Url required!");
+
+        if(typeof server_url=="string"){
+            this.serverUrl = server_url;
+            this.connection=null;
+            if(!this.serverUrl)throw new Error("Mongo Server Url required!");
+        }
+        else{
+            //ASSUME THAT server_url is a connection when not string
+            this.connection=server_url;
+            this.db = this.connection.db(this.dbName);
+        }
     }
     connect(){
         return new Promise((_resolve,_reject)=>{
@@ -53,12 +61,14 @@ class Database{
         });
     }
     close(){
-        if(this.isConnected()){
-            this.connection.close();
-        }
-        else{
-            throw new Error("Server not connected!");
-        }
+        if(this.serverUrl){
+            if(this.isConnected()){
+                this.connection.close();
+            }
+            else{
+                throw new Error("Server not connected!");
+            }
+        }        
     }
     isConnected(){
         if(this.connection&&this.connection.isConnected())return true;

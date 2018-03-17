@@ -8,7 +8,14 @@ const Query = require("./query.js").Query;
 class BannerServer extends WebServer{
     constructor(...args){
         super(...args);
-        this.db=new BannerDatabase(this.config.mongoConnection,this.config.mongoDb,this.config.queryInterval);
+        if(this.config.databaseConnection){
+            //USE OPEN DATABSE CONNECTION...
+            this.db = this.config.databaseConnection;
+        }
+        else{
+            this.db=new BannerDatabase(this.config.mongoConnection,this.config.mongoDb,this.config.queryInterval);
+        }
+        
     }
     _loadResource(filename){
         return new Promise(async (_resolve,_reject)=>{
@@ -101,19 +108,32 @@ class BannerServer extends WebServer{
         }
         return aktX;
     }
+
     start(){
         return new Promise(async (_resolve,_reject)=>{
             try{
-                await this.db.connect();
-                await this.db.loadDatabaseStructure();
-                await super.start();
-                this.resource = await Promise.all([
-                    this._loadResource("bg.jpg"),
-                    this._loadResource("dot-on.jpg"),
-                    this._loadResource("dot-off.jpg"),
-                    this._loadFont("Minecraft.ttf","minecraft")
-                ]);
-                _resolve();
+                if(this.config.databaseConnection){
+                    var instance = await super.start();
+                    this.resource = await Promise.all([
+                        this._loadResource("bg.jpg"),
+                        this._loadResource("dot-on.jpg"),
+                        this._loadResource("dot-off.jpg"),
+                        this._loadFont("Minecraft.ttf","minecraft")
+                    ]);
+                    _resolve(instance);
+                }
+                else{
+                    await this.db.connect();
+                    await this.db.loadDatabaseStructure();
+                    var instance = await super.start();
+                    this.resource = await Promise.all([
+                        this._loadResource("bg.jpg"),
+                        this._loadResource("dot-on.jpg"),
+                        this._loadResource("dot-off.jpg"),
+                        this._loadFont("Minecraft.ttf","minecraft")
+                    ]);
+                    _resolve(instance);
+                }
             }
             catch(ex){
                 _reject(ex);
@@ -134,10 +154,11 @@ class BannerServer extends WebServer{
     }
     close(){
         super.close();
-        if(this.db&&this.db.isConnected()){
+        if(!this.config.databaseConnection&&this.db&&this.db.isConnected()){
             this.db.close();
         }
     }
+
     makeBanner(ip,port,motd,status,playerCount,playerMax){
         //CREATE A COPY OF THE BACKGROUND IMAGE
         var banner = this._copyImageResource(this.resource[0]);

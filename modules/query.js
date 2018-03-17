@@ -13,9 +13,15 @@ class Query{
             "mongoConnection":config.mongoConnection||null,
             "mongoDb":config.mongoDb||"mcstat",
             "setDisabledTimeout":config.setDisabledTimeout||24*60*60*1000,
-            "setDisabledWebTimeout":config.setDisabledWebTimeout||72*60*60*1000
+            "setDisabledWebTimeout":config.setDisabledWebTimeout||72*60*60*1000,
+            "databaseConnection":config.databaseConnection||null
         };
-        this.db = new QueryDatabase(this.config.mongoConnection,this.config.mongoDb);
+        if(this.config.databaseConnection){
+            this.db = this.config.databaseConnection;
+        }
+        else{
+            this.db = new QueryDatabase(this.config.mongoConnection,this.config.mongoDb);
+        }
     }
     _registerCronJobs(){
         this.checkCronJob = setInterval(this.doPingAll.bind(this),this.config.interval);

@@ -19,26 +19,37 @@ class WebServer{
             "mongoDb":config.mongoDb||"mcstat",
             "queryInterval":config.queryInterval||360000,
             "databaseConnection":config.databaseConnection||null,
-            "createRouter":config.createRouter||false
+            "useRouter":config.useRouter||false
         };
-        
-        this.app = new express();
-        this.server = http.createServer(this.app);
+        if(this.config.useRouter){
+            this.app = new express.Router();
+        }
+        else{
+            this.app = new express();
+            this.server = http.createServer(this.app);
+        }
     }
 
     start(){
         return new Promise((_resolve,_reject)=>{
-            this.server.listen(this.config.port,this.config.host,()=>{
-                _resolve(this);
-            });
+            if(this.config.useRouter){
+                _resolve(this.app);
+            }
+            else{
+                this.server.listen(this.config.port,this.config.host,()=>{
+                    _resolve(this);
+                });
+            }
         });
     }
     close(){
-        if(this.server&&this.server.listening){
-            this.server.close();
-        }
-        else{
-            throw new Error("Server not listening!");
+        if(!this.config.useRouter){
+            if(this.server&&this.server.listening){
+                this.server.close();
+            }
+            else{
+                throw new Error("Server not listening!");
+            }
         }
     }
     _sendError(res,error,code=null){
@@ -64,25 +75,37 @@ class WebServer{
         .end();
     }
     registerMiddleware(){
-        //TODO: LATER WITH X-POWEREDBY this.app.use(helmet());
-        this.app.use(bodyParser.json({extended:true}));
-        this.app.use(cors());
+        //DONT REGISTER MIDDLEWARES, WHEN IN ROUTER MODE. PARENT SHOULD HAVE DONE THIS..
+        if(!this.config.useRouter){
+            //TODO: LATER WITH X-POWEREDBY this.app.use(helmet());
+            this.app.use(bodyParser.json({extended:true}));
+            this.app.use(cors());
+        }
     }
 }
 
 class ApiServer extends WebServer{
     constructor(...args){
         super(...args);
-        if(this.config.)
-        this.db=new ApiDatabase(this.config.mongoConnection,this.config.mongoDb);
+        if(this.config.databaseConnection){
+            //USE OPEN DATABSE CONNECTION...
+            this.db = this.config.databaseConnection;
+        }
+        else{
+            this.db=new ApiDatabase(this.config.mongoConnection,this.config.mongoDb);
+        }
     }
     start(){
         return new Promise(async (_resolve,_reject)=>{
             try{
-                await this.db.connect();
-                await this.db.loadDatabaseStructure();
-                await super.start();
-                _resolve(this);
+                if(this.config.databaseConnection){
+                    _resolve(await super.start());
+                }
+                else{
+                    await this.db.connect();
+                    await this.db.loadDatabaseStructure();
+                    _resolve(await super.start());
+                }
             }
             catch(ex){
                 _reject(ex);
@@ -91,7 +114,7 @@ class ApiServer extends WebServer{
     }
     close(){
         super.close();
-        if(this.db&&this.db.isConnected()){
+        if(!this.config.databaseConnection&&this.db&&this.db.isConnected()){
             this.db.close();
         }
     }
@@ -212,6 +235,9 @@ class ApiServer extends WebServer{
         switch(value){
             case "month":
                 sinceDate=moment(m).subtract(1,"month").toDate();
+                break;
+            case "week":
+                sinceDate=moment(m).subtract(1,"week").toDate();
                 break;
             case "day":
                 sinceDate=moment(m).subtract(1,"day").toDate();
