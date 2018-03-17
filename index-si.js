@@ -1,3 +1,8 @@
+/*
+    This file initiates the Server in single-Instance mode.
+    It only uses 1 Webserver (with one port) and one Database Connecion.
+*/
+
 const Databases = require("./modules/db.js");
 
 const ApiServer = require("./modules/api.js");

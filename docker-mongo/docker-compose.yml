@@ -7,3 +7,34 @@ services:
     restart: "no"
     volumes:
       - /home/marcel/docker-db:/data/db
+    networks:
+      mcstats:
+        aliases:
+          - mongodb
+  nginx:
+    image: nginx
+    depends_on:
+      - "mcstats"
+    ports:
+      - 80:80
+    restart: "no"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      mcstats:
+        aliases:
+          - nginx
+  mcstats:
+    image: node:9.8.0-alpine
+    depends_on:
+      - "mongodb"
+    restart: "no"
+    volumes:
+      - ..:/var/app:ro
+    command: node /var/app/index.js
+    networks:
+      mcstats:
+        aliases:
+          - mcstat
+networks:
+  mcstats:

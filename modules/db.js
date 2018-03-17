@@ -165,8 +165,18 @@ class ApiDatabase extends McstatDatabase{
             });
         });
     }
-
-    
+    reEnableServer(serverId){
+        return new Promise((_resolve,_reject)=>{
+            this.db.updateOne({"serverId":serverId},{"active":true},(err)=>{
+                if(err){
+                    _reject(err);
+                }
+                else{
+                    _resolve();
+                }
+            });
+        });
+    }
 
     getQueriesUntilToday(serverId,dateFrom){
         return new Promise((_resolve,_reject)=>{
@@ -222,7 +232,7 @@ class QueryDatabase extends McstatDatabase{
     }
     setServerDisabled(serverId){
         return new Promise((_resolve,_reject)=>{
-            this.serverCollection.updateOne({"serverId":serverId},{"$set":{"enabled":false,"disableTimestamp":new Date()}},(err)=>{
+            this.serverCollection.updateOne({"serverId":serverId},{"$set":{"active":false,"disableTimestamp":new Date()}},(err)=>{
                 if(err){
                     _reject(err);
                 }

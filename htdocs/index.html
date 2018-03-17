@@ -1,0 +1,103 @@
+<!Doctype html>
+<html lang="en">
+  <head>
+    <title>Minecraft Player Statistics API</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      function insertServer(){
+        var API_SERVER = "https://mcstat.sol4it.de/api/";
+        document.getElementById("submitB").setAttribute("disabled",true);
+        var ip = document.getElementById("ipInput").value;
+        var port = document.getElementById("portInput").value;
+        var outputContainer=document.getElementById("outputContainer");
+
+        if(!ip||!port||ip==""||port==""){
+          document.getElementById("submitB").removeAttribute("disabled");
+          return outputContainer.innerHTML= '<div class="card text-white bg-danger mb-3"><div class="card-body" style="width:100%"><p class="card-text">Please fill in IP and PORT!</p></div></div>';
+        }
+        if(isNaN(port)){
+          document.getElementById("submitB").removeAttribute("disabled");
+          return outputContainer.innerHTML= '<div class="card text-white bg-danger mb-3"><div class="card-body" style="width:100%"><p class="card-text">Please use a valid numeric PORT!</p></div></div>';
+        }
+
+        var request = new XMLHttpRequest();
+        request.open("POST",API_SERVER+"insertServer");
+        request.setRequestHeader("content-type","application/json");
+        request.addEventListener('load', function(event) {
+          var res = JSON.parse(request.responseText);
+          if (request.status >= 200 && request.status < 300) {
+              //SEND STATUS OK
+              if(res.error){
+                outputContainer.innerHTML= '<div class="card text-white bg-danger mb-3"><div class="card-body" style="width:100%"><p class="card-text">'+res.message+'</p></div></div>';
+              }
+              else{
+                outputContainer.innerHTML= '<div class="card text-white bg-success mb-3"><div class="card-body" style="width:100%"><p class="card-text">Your server is now monitored. Your Server-ID: '+res.serverId+'</p></div></div>';
+              }
+          } else {
+            if(res&&res.error){
+                outputContainer.innerHTML= '<div class="card text-white bg-danger mb-3"><div class="card-body" style="width:100%"><p class="card-text">'+res.message+'</p></div></div>';
+            }
+            else{
+              outputContainer.innerHTML= '<div class="card text-white bg-danger mb-3"><div class="card-body" style="width:100%"><p class="card-text">Can\'t reach Server!</p></div></div>';
+            }
+          }
+          document.getElementById("submitB").removeAttribute("disabled");
+        });
+        request.send(JSON.stringify({serverHost:ip,serverPort:port}));
+      }
+    </script>
+  </head>
+  <body>
+      <div class="container">
+        <h3 class="text-center" style="margin-top:20px;">Insert your Server:</h3>
+        <br/><br/>
+        <form>
+          <div class="form-group">
+            <label for="ipInput">Server IP:</label>
+            <input type="text" class="form-control" id="ipInput" aria-describedby="ipInputH" placeholder="Enter your Server IP">
+            <small id="ipInputH" class="form-text text-muted">Make sure your server is online!</small>
+          </div>
+          <div class="form-group">
+            <label for="portInput">Port</label>
+            <input type="text" class="form-control" id="portInput" placeholder="Server Port">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="insertServer();" id="submitB">Submit</button>
+        </form>
+        <br/><br/><br/>
+        <div id="outputContainer">
+        </div>
+        <br/>
+        <h4><b>HOWTO:</b> Embed it to your Website:</h4><br/>
+        Include the following to your Website's head:<br/>
+        <code>&lt;script type=&quot;text/javascript&quot; src=&quot;https://mcstats.sol4it.de/embed/{YOUR_SERVER_ID}.js&quot;&gt;&lt;/script&gt;</code>
+        <br/><br/><br/>
+        Use the following functions (provided by the script above) to generate Player Tables and Charts:<br/><br/>
+        <b>To render a table with Players Playtime:</b><br/>
+        <code>mcPlayerStats.makePlayerList("yourTableElement","today",10);</code><br/>
+        - The first argument has to be the table element (or ID) you want to apply the rendering to.<br>
+        - The second argument has to be the wanted timespan to display (Available Timespans: "today","week","month")<br/>
+        - The third argument is the amount of Players to be displayed<br/><br/>
+
+        <b>To render a chart with Players online history:</b><br/>
+        <code>mcPlayerStats.makeOnlineChart("yourSVGelement","today");</code><br/>
+        - The first argument has to be the SVG element (or ID) you want to apply the rendering to.<br>
+        - The second argument has to be the wanted timespan to display (Available Timespans: "today","week","month")<br/><br/>
+        
+        <b>To get ServerInfo (like Plugins, Version etc):</b><br/>
+        <code>mcPlayerStats.getServerInfo(callbackFn);</code><br/>
+        - The first argument has to be an callback, which will get 2 arguments passed. 1: An Error object, if an error occured, 2: The Server-Info as a regular object<br><br/>
+
+        <b>Pleas note:</b>  The table and Charts are meant to be styled by YOU. The table got it's own classNames and stuff. Use CSS to style it like you want.
+        <br/><br/>
+        <h5>DEMO PAGE: <a href="http://sol4it.de/mcstat/demo.html" target="_blank">DEMO FOR grandtheft.mcpe.me</a></h5>
+        <br/><br/><br/>
+        <h5><a href="/apidoc/">API DOCUMENTATION</a></h5><br/><br/>
+      </div>
+      <span style="text-align:center;display:block;">&copy; 2018 <a href="http://sol4it.de" target="_blank">Marcel Aust</a> - Not affiliated with Mojang or Microsoft</span>
+  </body>
+</html>

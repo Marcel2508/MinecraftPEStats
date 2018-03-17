@@ -19,7 +19,8 @@ class WebServer{
             "mongoDb":config.mongoDb||"mcstat",
             "queryInterval":config.queryInterval||360000,
             "databaseConnection":config.databaseConnection||null,
-            "useRouter":config.useRouter||false
+            "useRouter":config.useRouter||false,
+            "apiServerUrl":config.apiServerUrl||"https://mcstats.sol4it.de"
         };
         if(this.config.useRouter){
             this.app = new express.Router();
@@ -137,6 +138,7 @@ class ApiServer extends WebServer{
             this.app.get("/getLastQuery/:serverId",this._getLastQueryHandler.bind(this));
             this.app.get("/getOnlineHistory/:serverId/:duration?",this._getOnlineHistoryHandler.bind(this));
             this.app.get("/getPlayerMinuteCount/:serverId/:duration?",this._getPlayerMinuteCountHandler.bind(this));
+            this.app.get("/queryServer/:ip/:port",this._getLiveQueryHandler.bind(this));
 
             //for Testing purpose...
             this.app.get("/ping",this._pingHandler.bind(this));
@@ -167,7 +169,7 @@ class ApiServer extends WebServer{
             try{
                 var existingServer = await this.db.getServerByIpAndPort(host,port);
                 if(existingServer){
-                    if(existingServer.enabled){
+                    if(existingServer.active){
                         this._sendError(res,new Error("Server already exists! ID: "+existingServer.serverId+", added: "+this._formatDate(existingServer.created)),3);
                     }
                     else{
@@ -183,7 +185,7 @@ class ApiServer extends WebServer{
             }
             catch(ex){
                 if(ex.code==112){
-                    this._sendError(res,new Error("Server not Reachable!"),2);
+                    this._sendError(res,new Error("Can't reach server!"),2);
                 }
                 else{
                     this._sendError(res,ex);
@@ -310,6 +312,20 @@ class ApiServer extends WebServer{
         }
     }
     
+    async _getLiveQueryHandler(req,res){
+        try{
+            var queryResult = await QueryLib.getServerQuery(req.params.ip,req.params.port);
+            this._sendJson(res,queryResult);
+        }
+        catch(ex){
+            if(ex.code==112){
+                this._sendError(res,new Error("Server not reachable!"),1);
+            }
+            else{
+                this._sendError(res,ex);
+            }
+        }
+    }
 
 }
 

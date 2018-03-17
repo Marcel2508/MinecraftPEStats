@@ -1,0 +1,86 @@
+<!Doctype html>
+<html lang="en">
+  <head>
+    <title>Minecraft Player Statistics API</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      window.onload=function(){
+          var check = function(){
+            $(".targetScroller").each(function(){
+                var me = $(this);
+                var target = $(me.attr("href"));
+                if(target){
+                    console.log("POS:",target.offset().top-$(window).scrollTop());
+                }
+            });
+          };
+
+        $(window).on("scroll",check);
+      };
+    </script>
+  </head>
+  <body>
+      <div class="container-fluid">
+        <div class="row">
+            <div class="col-2 bg-dark text-light pt-3">
+                <!-- MENU -->
+                <h4 class="pt-5">API</h5>
+                <ul style="list-style-type: none;">
+                    <li class="p-2 rounded bg-secondary"><a class="text-white" style="text-decoration: none;" href="#2">Insert a Server</a></li>
+                    <li class="p-2 rounded"><a href="#3" class="text-white" style="text-decoration: none;">Query a Server</a></li>
+                </ul>
+            </div>
+            <div class="col-10 pt-3">
+                <!-- CONTENT -->
+                <div class="container-fluid pb-5 pt-5" id="1">
+                    <h4 class="bg-secondary text-light p-1 pt-2 pb-2">Introduction</h4>
+                    <p>
+                        <b>This Service is in an early ALPHA state! Everything could change anytime. Please be aware of this fact when using this service!</b><br/>
+                        With mcstats.sol4it.de you can track servers and players. The following documentation is designed to teach you about how to do this.
+                    </p>
+                </div>
+                <div class="container-fluid pb-5 pt-5" id="2">
+                    <h4 class="bg-secondary text-light p-1 pt-2 pb-2">Insert a Server</h4>
+                    <p>
+                        This Request allows you to add a new server to the tracking system.
+                        Your server will be queried every 5 minutes.<br/>
+                        When your server were offline for over 24 Hours, your server will be disabled! In order to re-enable it again, you can call this request again.<br/>
+                        <div class="card border-primary">
+                            <div class="card-header">
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;POST http://mcstats.sol4it.de/api/insertServer
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+{
+    "serverHost":"your.server.host",
+    "serverPort":19132
+}
+</pre>
+                            </div>
+                        </div>
+                        <div class="card border-success">
+                            <div class="card-header">
+                                <b>Response</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+{
+    "serverHost":"your.server.host",
+    "serverPort":19132
+}
+</pre>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+      </div>
+      <span style="text-align:center;display:block;">&copy; 2018 <a href="http://sol4it.de" target="_blank">Marcel Aust</a> - Not affiliated with Mojang or Microsoft</span>
+  </body>
+</html>
