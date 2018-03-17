@@ -1,7 +1,7 @@
 <!Doctype html>
 <html lang="en">
   <head>
-    <title>Minecraft Player Statistics API</title>
+    <title>Minecraft Player Statistics API - Documentation</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -15,7 +15,13 @@
                 var me = $(this);
                 var target = $(me.attr("href"));
                 if(target){
-                    console.log("POS:",target.offset().top-$(window).scrollTop());
+                    var pos = target.offset().top-$(window).scrollTop();
+                    if(pos<$(window).outerHeight()/3&&pos>0-target.height()+100){
+                        me.parent().addClass("bg-secondary");
+                    }
+                    else{
+                        me.parent().removeClass("bg-secondary");
+                    }
                 }
             });
           };
@@ -23,36 +29,67 @@
         $(window).on("scroll",check);
       };
     </script>
+    <style type="text/css">
+        #menu{
+            position:fixed;
+            z-index:1;
+        }
+        @media screen and (max-width: 1525px)
+        {
+            #menu{
+                left:0px;
+            }
+        }
+        @media screen and (max-width: 1490px)
+        {
+            #menu{
+                position: relative;
+                left:auto;
+            }
+        }
+    </style>
   </head>
   <body>
       <div class="container-fluid">
         <div class="row">
-            <div class="col-2 bg-dark text-light pt-3">
+            <div class="col-0 d-none d-md-flex col-md-2 bg-dark text-light pt-3">
                 <!-- MENU -->
-                <h4 class="pt-5">API</h5>
-                <ul style="list-style-type: none;">
-                    <li class="p-2 rounded bg-secondary"><a class="text-white" style="text-decoration: none;" href="#2">Insert a Server</a></li>
-                    <li class="p-2 rounded"><a href="#3" class="text-white" style="text-decoration: none;">Query a Server</a></li>
-                </ul>
+                <div id="menu">
+                    <h4 class="pt-5 pl-3">API</h5>
+                    <ul style="list-style-type: none;">
+                        <li class="p-2 rounded"><a class="text-white targetScroller" style="text-decoration: none;" href="#2">Insert a Server</a></li>
+                        <li class="p-2 rounded"><a href="#3" class="text-white targetScroller" style="text-decoration: none;">Query a Server</a></li>
+                        <li class="p-2 rounded"><a href="#4" class="text-white targetScroller" style="text-decoration: none;">Query an existing Server</a></li>
+                        <li class="p-2 rounded"><a href="#5" class="text-white targetScroller" style="text-decoration: none;">Get Server info</a></li>
+                        <li class="p-2 rounded"><a href="#6" class="text-white targetScroller" style="text-decoration: none;">Get online history</a></li>
+                        <li class="p-2 rounded"><a href="#7" class="text-white targetScroller" style="text-decoration: none;">Get players minutes</a></li>
+                    </ul>
+                    <h4 class="pt-5 pl-3">Banners</h5>
+                    <ul style="list-style-type: none;">
+                        <li class="p-2 rounded"><a class="text-white targetScroller" style="text-decoration: none;" href="#8">Get server Banner</a></li>
+                        <li class="p-2 rounded"><a href="#9" class="text-white targetScroller" style="text-decoration: none;">Get server Banner #2</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-10 pt-3">
+            <div class="col-12 col-md-10 pt-3">
                 <!-- CONTENT -->
                 <div class="container-fluid pb-5 pt-5" id="1">
-                    <h4 class="bg-secondary text-light p-1 pt-2 pb-2">Introduction</h4>
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Introduction</h4>
                     <p>
-                        <b>This Service is in an early ALPHA state! Everything could change anytime. Please be aware of this fact when using this service!</b><br/>
+                        This is the API-Documentation of the ALPHA2 version of mcstats.sol4it.de. Feel free to help developing this tool at GitHub: <a href="https://github.com/Marcel2508/MinecraftPEStats">MinecraftPEStats</a><br/><br/>
+                        <b>This Service is in an early ALPHA state! Everything could change at any time. Please be aware of this fact when using this service!</b><br/>
                         With mcstats.sol4it.de you can track servers and players. The following documentation is designed to teach you about how to do this.
                     </p>
                 </div>
                 <div class="container-fluid pb-5 pt-5" id="2">
-                    <h4 class="bg-secondary text-light p-1 pt-2 pb-2">Insert a Server</h4>
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Insert a Server</h4>
                     <p>
                         This Request allows you to add a new server to the tracking system.
                         Your server will be queried every 5 minutes.<br/>
                         When your server were offline for over 24 Hours, your server will be disabled! In order to re-enable it again, you can call this request again.<br/>
-                        <div class="card border-primary">
+                        <div class="card border-primary mt-3">
                             <div class="card-header">
-                                <b>Request</b>&nbsp;&nbsp;&nbsp;POST http://mcstats.sol4it.de/api/insertServer
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;POST&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/insertServer
                             </div>
                             <div class="card-body">
 <pre class="text-secondary">
@@ -63,24 +100,282 @@
 </pre>
                             </div>
                         </div>
-                        <div class="card border-success">
+                        <div class="card border-success mt-3">
                             <div class="card-header">
                                 <b>Response</b>
                             </div>
                             <div class="card-body">
 <pre class="text-secondary">
 {
-    "serverHost":"your.server.host",
-    "serverPort":19132
+    "status": "OK",
+    "serverId": "5n6y2fl4jeucdz3v",
+    "error": false,
+    "generated": "2018-03-16T19:34:23.378Z"
 }
 </pre>
                             </div>
                         </div>
                     </p>
                 </div>
+                <!-- 3 -->
+                <div class="container-fluid pb-5 pt-5" id="3">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Query a Server</h4>
+                    <p>
+                        You can query a Server, which hasn't been added to the system yet, by providing Server IP and Port. Please be aware, that we might restrict access to this function when abused.<br/>
+                        <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/queryServer/<b>{IP}</b>/<b>{PORT}</b>
+                            </div>
+                            <div class="card-body text-secondary">EMPTY</div>
+                        </div>
+                        <div class="card border-success mt-3">
+                            <div class="card-header">
+                                <b>Response</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+{
+    "motd": "§9FFA-Play§r §cHardcore§r §3Survival§r",
+    "playerCount": 0,
+    "playerList": [],
+    "maxPlayerCount": 128,
+    "serverVersion": "v1.2.10",
+    "plugins": "PocketMine-MP 1.7dev-758: essentialsTP 1.2.0-6; DevTools 1.12.9; Worlds 2.0.1; BasicHUD 1.0.6-4; iProtector 3.1.0-10; PurePerms 1.4.1-4; PureChat 1.4.10-5; HardcorePlugin 1.1.0; EconomyPShop 2.0.2-5; ChatAdvanced 1.1.0; EconomyAPI 5.7.1-4; LimitedCreative 1.2.3; EconomyShop 2.0.8-6; EconomySell 2.0.7-4; EconomyJob 2.0.4-3; EconomyLand 2.1.1-3",
+    "error": false,
+    "generated": "2018-03-17T18:57:42.537Z"
+}
+</pre>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <!-- 4 -->
+                <div class="container-fluid pb-5 pt-5" id="4">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Query an existing Server</h4>
+                    <p>
+                        You can query a Server, which has been previously added to the tracking system. Just provide it's trackingId to get (filtered) Server information.<br/>
+                        When your Server is already added to the system, you should always prefer this method, becaus it does cost way less performance, and It helps to keep your server actively tracked!<br/>
+                        <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/getLastQuery/<b>{serverId}</b>
+                            </div>
+                            <div class="card-body text-secondary">EMPTY</div>
+                        </div>
+                        <div class="card border-success mt-3">
+                            <div class="card-header">
+                                <b>Response</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+{
+    "id": "405gzn1jevq988t",
+    "serverId": "5n6y2ku2jeufgagv",
+    "playerCount": 8,
+    "playerList": [
+        "PhoebeHopesEvan",
+        "PaperClip_",
+        "CodyGarrothsSon6",
+        "KaneTheWaterFist",
+        "KcDaughter_Mina",
+        "mrzane3241",
+        "SKyleTheCat",
+        "SUGAESTEPH"
+    ],
+    "timestamp": "2018-03-17T18:50:22.589Z",
+    "error": false,
+    "generated": "2018-03-17T19:09:40.231Z"
+}
+</pre>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <!-- 5 -->
+                <div class="container-fluid pb-5 pt-5" id="5">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Get Server info</h4>
+                    <p>
+                       This method returns filtered Informations regarding your Server. It contains information like last contact or created date. It also contains Server settings like MOTD oder maxPlayers when query was successfull.<br/>
+                        <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/getServerInfo/<b>{serverId}</b>
+                            </div>
+                            <div class="card-body text-secondary">EMPTY</div>
+                        </div>
+                        <div class="card border-success mt-3">
+                            <div class="card-header">
+                                <b>Response</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+{
+    "serverId": "5n6y2ku2jeufgagv",
+    "ip": "a22375.leet.cc",
+    "port": 22375,
+    "created": "2018-03-16T21:00:10.111Z",
+    "serverInfo": {
+        "motd": "§l§cP§6o§et§aa§bt§5o§dF§ca§6n§et§aa§bs§5y§dy",
+        "maxPlayerCount": 25,
+        "serverVersion": 25,
+        "plugins": "PocketMine-MP 1.7dev: LeetAuth 1.4.0; DevTools 1.12.7; LEETLocalChat 1.0.0; LeetSpawnManager 1.0; Rainbow_Effect 1.0.2; LEEThud 0.2.2dev; DontKickFly 1.0.0; BlockedCommands 1.1.0; LastSeenPE 1.0.0; SizePLayer 1; MoreCommands 1.1.6; LeetTime 1.0.0; Economy2 1.1.1; LeetVault 1.1.5; LEET 1.0.0; iControlU 1.3; NameSpaceFixer 1; Economy2Shop 1.0.1; SignPortal 1.1.2; NoAdvertisingPE 1.0.0; ItemCasePE 1.1.0; SurvivalFly 1.0.0; WorldEditArt 1.0.1; LeetConfigReset 1.0; EconomyAPI 0.1.0; LightningStick 1; LEETchairs 0.1.2dev; AdminFun 1.0.0; WorldProtect 2.2.1; EconomyCasino 2.0.2; CoolDeath 0.0.1; NPC 1.4; EconomyAirport 1337.0.0; TapToDoLEETCC 1.1.0; InvSee 0.0.1; LEETCR 0.0.1; Alias 1.1.2m; LeetProtector 0.2dev-f2; LeetTP 1.2.1; Slapper 1.3.4; PocketVote 2.0.1; Luz 1.0; LogBlock2 2.0.0; LeetBanners 1.0; DoToAll 1.0.1; LeetLogin 1.0.0; HelpOp 1.0.4; AutoBroadcastPE 1.0.0; EconomyTax 2.0.3; AutoCommandPE 1.0.0; EconomyAuction 2.0.2; PurePerms 1.3.6; LeetPlayerProfile 1.0; EconomyJob 2.0.4; MadCommands 2.1_build_1015; MyPlot 1; PureChat 1.4.0.3"
+    },
+    "lastContact": "2018-03-17T18:50:22.590Z",
+    "lastApiRequest": null,
+    "lastBannerRequest": null,
+    "webOrigins": [],
+    "active": false,
+    "disableTimestamp": "2018-03-17T18:50:22.342Z",
+    "enabled": false,
+    "error": false,
+    "generated": "2018-03-17T20:47:59.484Z"
+}
+</pre>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <!-- 6 -->
+                <div class="container-fluid pb-5 pt-5" id="6">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Get online history</h4>
+                    <p>
+                        This method returns the online player count history for a given timespan.
+                        You can use Values like "month","week","day" and "hour". This value can be used to render Charts.<br/>
+                        <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/getOnlineHistory/<b>{serverId}</b>/<b>{month/week/day/hour}</b>
+                            </div>
+                            <div class="card-body text-secondary">EMPTY</div>
+                        </div>
+                        <div class="card border-success mt-3">
+                            <div class="card-header">
+                                <b>Response</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+{
+    "playerData": [
+        {
+            "timestamp": "2018-03-16T21:01:17.159Z",
+            "playerCount": 15
+        },
+        {
+            "timestamp": "2018-03-16T21:05:49.214Z",
+            "playerCount": 14
+        },
+        {
+            "timestamp": "2018-03-16T21:10:27.508Z",
+            "playerCount": 12
+        },
+        {
+            "timestamp": "2018-03-16T21:11:04.960Z",
+            "playerCount": 14
+        }, 
+        [...]
+    ],
+    "error": false,
+    "generated": "2018-03-17T20:52:05.083Z"
+}
+</pre>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <!-- 7 -->
+                <div class="container-fluid pb-5 pt-5" id="7">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Get players minutes</h4>
+                    <p>
+                        This method returns players played minutes count. You could use this for example for generating leaderboards.<br/>
+                        <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/getPlayerMinuteCount/<b>{serverId}</b>/<b>{month/week/day/hour}</b>
+                            </div>
+                            <div class="card-body text-secondary">EMPTY</div>
+                        </div>
+                        <div class="card border-success mt-3">
+                            <div class="card-header">
+                                <b>Response</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+{
+    "playerData": [
+        {
+            "count": 79,
+            "lastCheck": "2018-03-17T18:50:22.589Z",
+            "playerName": "PhoebeHopesEvan"
+        },
+        {
+            "count": 66,
+            "lastCheck": "2018-03-17T18:50:22.589Z",
+            "playerName": "KaneTheWaterFist"
+        },
+        {
+            "count": 55,
+            "lastCheck": "2018-03-17T18:50:22.589Z",
+            "playerName": "PaperClip_"
+        },
+        {
+            "count": 47,
+            "lastCheck": "2018-03-17T18:50:22.589Z",
+            "playerName": "SUGAESTEPH"
+        },
+        [...]
+    ],
+    "error": false,
+    "generated": "2018-03-17T21:00:43.028Z"
+}
+</pre>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <h4 class="bg-dark text-light rounded p-3 text-center">Banners</h4>
+                <!-- BANNER DOKU -->
+                <!-- 8 -->
+                <div class="container-fluid pb-5 pt-5" id="8">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Get server Banner</h4>
+                    <p>
+                        This method returns a PNG image, based on recent queries. You should prefer this method, because it uses less performance.
+                        <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/banner/<b>{serverId}</b>.png</b>
+                            </div>
+                            <div class="card-body text-secondary">EMPTY</div>
+                        </div>
+                        <div class="card border-success mt-3">
+                            <div class="card-header">
+                                <b>Response</b>
+                            </div>
+                            <div class="card-body">
+                                <img src="data:image/png;base64,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"/>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <!-- 9 -->
+                <div class="container-fluid pb-5 pt-5" id="9">
+                        <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Get server Banner by Ip and Port</h4>
+                        <p>
+                            This method returns a PNG image. This method fetches the server query in realtime, which can cause a slight delay. You should prefer the above method, because this might get removed when abused!
+                            <div class="card border-primary mt-3">
+                                <div class="card-header">
+                                    <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/banner/<b>{serverIP}</b>/<b>{serverPort}</b>.png</b>
+                                </div>
+                                <div class="card-body text-secondary">EMPTY</div>
+                            </div>
+                            <div class="card border-success mt-3">
+                                <div class="card-header">
+                                    <b>Response</b>
+                                </div>
+                                <div class="card-body">
+                                    <img src="data:image/png;base64,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"/>
+                                </div>
+                            </div>
+                        </p>
+                    </div>
+
+                <span style="text-align:center;display:block;">&copy; 2018 <a href="http://sol4it.de" target="_blank">Marcel Aust</a> - Not affiliated with Mojang or Microsoft</span>
             </div>
         </div>
       </div>
-      <span style="text-align:center;display:block;">&copy; 2018 <a href="http://sol4it.de" target="_blank">Marcel Aust</a> - Not affiliated with Mojang or Microsoft</span>
   </body>
 </html>

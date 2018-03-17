@@ -284,21 +284,21 @@ class ApiServer extends WebServer{
                 for(var j=0;j<queries[i].playerList.length;j++){
                     if(playerHourCounter.hasOwnProperty(queries[i].playerList[j])){
                         //IF USER IN RANGE
-                        if(this._checkDurationIsInRealisticRange(playerHourCounter[queries[i].playerList[j]].lastCheck,queries[i].timestamp)){
+                        if(this._checkDurationIsInRealisticRange(playerHourCounter[queries[i].playerList[j]].lastOnline,queries[i].timestamp)){
                             //ADD COUNTER+SET NEW DATE
-                            playerHourCounter[queries[i].playerList[j]].count+=queries[i].timestamp-playerHourCounter[queries[i].playerList[j]].lastCheck;
-                            playerHourCounter[queries[i].playerList[j]].lastCheck=queries[i].timestamp;
+                            playerHourCounter[queries[i].playerList[j]].count+=queries[i].timestamp-playerHourCounter[queries[i].playerList[j]].lastOnline;
+                            playerHourCounter[queries[i].playerList[j]].lastOnline=queries[i].timestamp;
                         }
                         else{
                             //ELSE: ONLY SET NEW DATE
-                            playerHourCounter[queries[i].playerList[j]].lastCheck=queries[i].timestamp;
+                            playerHourCounter[queries[i].playerList[j]].lastOnline=queries[i].timestamp;
                         }
                     }
                     else{
                         //CREATE USER IN OBJECT..
                         playerHourCounter[queries[i].playerList[j]]={
                             count:0,
-                            lastCheck:queries[i].timestamp
+                            lastOnline:queries[i].timestamp
                         };
                     }
                 }
