@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const BannerDatabase = require("./db.js").BannerDatabase;
 const WebServer = require("./api.js").WebServer;
+const Query = require("./query.js").Query;
 
 class BannerServer extends WebServer{
     constructor(...args){
@@ -126,6 +127,7 @@ class BannerServer extends WebServer{
             super.registerMiddleware();
             //ROUTES 
             this.app.get("/:serverId.png",this._bannerRouteIdHandler.bind(this));
+            this.app.get("/:ip/:port.png",this._bannerRouteIpAndPortHandler.bind(this));
 
             _resolve();
         });
@@ -174,6 +176,56 @@ class BannerServer extends WebServer{
     async _bannerRouteIdHandler(req,res){
         try{
             var bannerData = await this.db.getBannerDataById(req.params.serverId);
+            var bannerImage = this.makeBanner(bannerData.ip,bannerData.port,bannerData.motd,bannerData.status,bannerData.aktPlayerCount,bannerData.maxPlayerCount);
+            res.status(200)
+            .type("image/png");
+            pureImage.encodePNGToStream(bannerImage,res).then(()=>{
+                res.end();
+            })
+            .catch((ex)=>{
+                console.error(ex);
+            });
+        }
+        catch(ex){
+            this._sendError(res,ex);
+        }
+    }
+
+    getBannerDataByIpAndPort(ip,port){
+        return new Promise(async (_resolve,_reject)=>{
+            try{
+                var serverData = await Query.getServerQuery(ip,port);
+                _resolve({
+                    ip:ip,
+                    port:port,
+                    motd:serverData.motd,
+                    status:true,
+                    aktPlayerCount:serverData.playerCount,
+                    maxPlayerCount:serverData.maxPlayerCount
+                });
+            }
+            catch(ex){
+                //IF SERVER JUST NOT REACHABLE: return empty response..
+                if(ex.code==112){
+                    _resolve({
+                        ip:ip,
+                        port:port,
+                        motd:"UNKNOWN...",
+                        status:false,
+                        aktPlayerCount:0,
+                        maxPlayerCount:0
+                    });
+                }
+                else{
+                    _reject(ex);
+                }
+            }          
+        });
+    }
+
+    async _bannerRouteIpAndPortHandler(req,res){
+        try{
+            var bannerData = await this.getBannerDataByIpAndPort(req.params.ip,req.params.port);
             var bannerImage = this.makeBanner(bannerData.ip,bannerData.port,bannerData.motd,bannerData.status,bannerData.aktPlayerCount,bannerData.maxPlayerCount);
             res.status(200)
             .type("image/png");

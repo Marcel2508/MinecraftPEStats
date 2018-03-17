@@ -28,11 +28,11 @@ const bannerServer = new BannerServer.BannerServer({
 
 const run = async function run(){
     try{
-        /*await api.start();
+        await api.start();
         await api.registerListener();
         console.log("API STARTED!");
         await queryTask.start();
-        console.log("Query Task started!")*/
+        console.log("Query Task started!")
 
         await bannerServer.start();
         await bannerServer.registerListener();

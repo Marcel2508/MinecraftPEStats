@@ -17,8 +17,11 @@ class WebServer{
             "mongoConnection":config.mongoConnection||null,
             "useStructuredJson":config.jsonStructured||false,
             "mongoDb":config.mongoDb||"mcstat",
-            "queryInterval":config.queryInterval||360000
+            "queryInterval":config.queryInterval||360000,
+            "databaseConnection":config.databaseConnection||null,
+            "createRouter":config.createRouter||false
         };
+        
         this.app = new express();
         this.server = http.createServer(this.app);
     }
@@ -70,6 +73,7 @@ class WebServer{
 class ApiServer extends WebServer{
     constructor(...args){
         super(...args);
+        if(this.config.)
         this.db=new ApiDatabase(this.config.mongoConnection,this.config.mongoDb);
     }
     start(){
