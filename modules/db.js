@@ -107,6 +107,23 @@ class McstatDatabase extends Database{
             });
         });
     }
+    getLastQuery(serverId){
+        return new Promise((_resolve,_reject)=>{
+            this.queryCollection.find({"serverId":serverId}).sort({timestamp:-1}).limit(1).toArray((err,result)=>{
+                if(err){
+                    _reject(err);
+                }
+                else{
+                    if(result&&result.length==1){
+                        _resolve(result[0]);
+                    }
+                    else{
+                        _resolve(null);
+                    }
+                }
+            });
+        });
+    }
 }
 
 class ApiDatabase extends McstatDatabase{
@@ -139,23 +156,7 @@ class ApiDatabase extends McstatDatabase{
         });
     }
 
-    getLastQuery(serverId){
-        return new Promise((_resolve,_reject)=>{
-            this.queryCollection.find({"serverId":serverId}).limit(1).sort({lastContact:-1}).toArray((err,result)=>{
-                if(err){
-                    _reject(err);
-                }
-                else{
-                    if(result&&result.length==1){
-                        _resolve(result[0]);
-                    }
-                    else{
-                        _resolve(null);
-                    }
-                }
-            });
-        });
-    }
+    
 
     getQueriesUntilToday(serverId,dateFrom){
         return new Promise((_resolve,_reject)=>{
@@ -248,7 +249,40 @@ class QueryDatabase extends McstatDatabase{
 }
 
 class BannerDatabase extends McstatDatabase{
-
+    //REQUIRES queryInterval as 3rd Parameter!!!
+    constructor(...args){
+        super(...args);
+        this.config = {queryInterval:args[2]};
+    }
+    getBannerDataById(serverId){
+        return new Promise(async (_resolve,_reject)=>{
+            try{
+                var [server,lastQuery] = await Promise.all([this.getServer(serverId),this.getLastQuery(serverId)]);
+                if(server && lastQuery){
+                    var d = {
+                        motd:server.serverInfo.motd,
+                        maxPlayerCount:server.serverInfo.maxPlayerCount,
+                        ip:server.ip,
+                        port:server.port
+                    };
+                    if(new Date()-lastQuery.timestamp>this.config.queryInterval*2.5){
+                        d.status=false;
+                    }
+                    else{
+                        d.status=true;
+                        d.aktPlayerCount=lastQuery.playerCount;
+                    }
+                    _resolve(d);
+                }
+                else{
+                    _reject(new Error("Server or Querydata not found. Please try again later..."));
+                }
+            }
+            catch(ex){
+                _reject(ex);
+            }
+        });
+    }
 }
 
 module.exports = {

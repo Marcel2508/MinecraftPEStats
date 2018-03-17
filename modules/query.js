@@ -34,7 +34,7 @@ class Query{
                         port:port,
                     }).then(async (res)=>{
                         var d = {
-                            motd:res.name,
+                            motd:res.name.replace(/Â/gim,""),
                             playerCount:parseInt(res.raw.numplayers),
                             playerList:res.players.map((e)=>{return e.name;}),
                             maxPlayerCount:parseInt(res.raw.maxplayers),

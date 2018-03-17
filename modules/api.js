@@ -16,7 +16,8 @@ class WebServer{
             "port":config.port||80,
             "mongoConnection":config.mongoConnection||null,
             "useStructuredJson":config.jsonStructured||false,
-            "mongoDb":config.mongoDb||"mcstat"
+            "mongoDb":config.mongoDb||"mcstat",
+            "queryInterval":config.queryInterval||360000
         };
         this.app = new express();
         this.server = http.createServer(this.app);
