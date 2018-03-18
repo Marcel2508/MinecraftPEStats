@@ -134,6 +134,55 @@ class McstatDatabase extends Database{
             });
         });
     }
+
+    updateServerAccessCounter(serverId,counterField,origin){
+        return new Promise(async (_resolve,_reject)=>{
+            try{
+                var y = {};
+                var sdata = await this.getServer(serverId);
+                y[counterField]=sdata[counterField]+1;
+                if(!sdata.find((x)=>{return x.webOrigins.find((z)=>{return z.toLowerCase()==origin;});})){
+                    sdata.webOrigins.push(origin);
+                    y["webOrigins"]=sdata.webOrigins;
+                }
+                this.db.updateOne({serverId:serverId},y,(err)=>{
+                    if(err){
+                        _reject(err);
+                    }
+                    else{
+                        _resolve();
+                    }
+                });
+            }
+            catch(ex){
+                _resolve(ex);
+            }
+        });
+    }
+    insertManualAccessCounter(ip,port,origin,isBanner){
+        return new Promise(async (_resolve,_reject)=>{
+            try{
+                var y = {
+                    ip:ip,
+                    port:port,
+                    origin:origin,
+                    type:isBanner?"Banner":"Query",
+                    timestamp:new Date()
+                };
+                this.statusCollection.insertOne(y,(err)=>{
+                    if(err){
+                        _reject(err);
+                    }
+                    else{
+                        _resolve();
+                    }
+                });
+            }
+            catch(ex){
+                _resolve(ex);
+            }
+        });
+    }
 }
 
 class ApiDatabase extends McstatDatabase{

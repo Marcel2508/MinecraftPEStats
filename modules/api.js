@@ -208,6 +208,7 @@ class ApiServer extends WebServer{
             else{
                 this._sendError(res,new Error("Invalid ServerID!"),1);
             }
+            await this.db.updateServerAccessCounter(req.serverId,"lastApiRequest",req.get("origin"));
         }
         catch(ex){
             this._sendError(res,ex);
@@ -225,6 +226,7 @@ class ApiServer extends WebServer{
             else{
                 this._sendError(res,new Error("No Query yet.. Please wait a few minutes!"),1)
             }
+            await this.db.updateServerAccessCounter(req.serverId,"lastApiRequest",req.get("origin"));
         }
         catch(ex){
             this._sendError(res,ex);
@@ -234,7 +236,7 @@ class ApiServer extends WebServer{
     _getPastDateForQuery(value,oDate){
         var m = oDate?oDate:new Date();
         var sinceDate = moment(m).subtract(1,"day").toDate();
-        switch(value){
+        switch(value.toLowerCase()){
             case "month":
                 sinceDate=moment(m).subtract(1,"month").toDate();
                 break;
@@ -250,7 +252,8 @@ class ApiServer extends WebServer{
             default:
                 sinceDate=moment(m).subtract(1,"day").toDate();
         }
-        return sinceDate;
+        console.log(value,sinceDate);
+        return new Date(sinceDate);
     }
 
     async _getOnlineHistoryHandler(req,res){
@@ -259,6 +262,7 @@ class ApiServer extends WebServer{
             var queries = await this.db.getQueriesUntilToday(req.params.serverId,queryDate);
             var historyResult=queries.map((x)=>{return {timestamp:x.timestamp,playerCount:x.playerCount};});
             this._sendJson(res,{playerData:historyResult});
+            await this.db.updateServerAccessCounter(req.serverId,"lastApiRequest",req.get("origin"));
         }
         catch(ex){
             this._sendError(res,ex);
@@ -306,6 +310,7 @@ class ApiServer extends WebServer{
             //TRANSFORM AND SORT ARRAY
             var playerNameCounterArray = Object.keys(playerHourCounter).map((x)=>{playerHourCounter[x].count=Math.round(playerHourCounter[x].count/(1000*60)); return Object.assign(playerHourCounter[x],{playerName:x});}).sort((a,b)=>{return b.count-a.count;});
             this._sendJson(res,{playerData:playerNameCounterArray});
+            await this.db.updateServerAccessCounter(req.serverId,"lastApiRequest",req.get("origin"));
         }
         catch(ex){
             this._sendError(res,ex);
@@ -316,6 +321,7 @@ class ApiServer extends WebServer{
         try{
             var queryResult = await QueryLib.getServerQuery(req.params.ip,req.params.port);
             this._sendJson(res,queryResult);
+            await this.db.insertManualAccessCounter(req.params.ip,req.params.port,req.get("origin"),false);
         }
         catch(ex){
             if(ex.code==112){

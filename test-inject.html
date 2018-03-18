@@ -1,0 +1,12 @@
+<script type="text/javascript" src="http://localhost/embed/5n6y2ku2jeufgagv.js"></script>
+<table id="test"></table>
+<br/><br/><br/>
+<svg id="chart"></svg>
+<script type="text/javascript">
+mcstats.makeTable("test","month",10,null,null,function(err){
+    console.log("#",err)
+});
+mcstats.makeChart("chart","hour",function(err){
+    console.log("#",err)
+});
+</script>

@@ -31,12 +31,12 @@ class Web extends api.WebServer{
         });
     }
     _serverIntegrationJsHandler(req,res){
-        fs.readFile(path.join(__dirname,"web","inject.js"),(err,fileData)=>{
+        fs.readFile(path.join(__dirname,"web","inject2.js"),(err,fileData)=>{
             if(err){
                 this._sendError(res,err);
             }
             else{
-                fileData = fileData.toString().replace(/%@SERVERID@%/gim,"").replace(/%@SERVERURL@%/gim,this.config.apiServerUrl);
+                fileData = fileData.toString().replace(/%@SERVERID@%/gim,req.params.serverId).replace(/%@SERVERURL@%/gim,this.config.apiServerUrl);
                 res.status(200)
                 .type("text/javascript")
                 .send(fileData)

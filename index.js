@@ -29,7 +29,7 @@ const bannerServer = new BannerServer.BannerServer({
 
 const frontendWebServer = new FrontEndWeb.Web({
     "port":8082,
-    "apiServerUrl":"http://localhost/api"
+    "apiServerUrl":"http://localhost"
 });
 
 const run = async function run(){
