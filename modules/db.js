@@ -135,17 +135,27 @@ class McstatDatabase extends Database{
         });
     }
 
-    updateServerAccessCounter(serverId,counterField,origin){
+    updateServerAccessCounter(serverId,counterType,origin){
         return new Promise(async (_resolve,_reject)=>{
             try{
+                console.log(serverId,counterType,origin);
+                var counterName = "apiRequestCount";
+                var lastName = "lastApiRequest";
+                if(counterType=="banner"){
+                    counterName="bannerRequestCount";
+                    lastName="lastBannerRequest";
+                }
                 var y = {};
                 var sdata = await this.getServer(serverId);
-                y[counterField]=sdata[counterField]+1;
-                if(!sdata.find((x)=>{return x.webOrigins.find((z)=>{return z.toLowerCase()==origin;});})){
-                    sdata.webOrigins.push(origin);
-                    y["webOrigins"]=sdata.webOrigins;
+                var z = {};
+                z[counterName]=sdata[counterName]+1;
+                z[lastName]=new Date();
+                y["$set"]=z;
+                if(origin&&!sdata.webOrigins.find((x)=>{return x.toLowerCase()==origin.toLowerCase();})){
+                    y["$push"]={"webOrigins":origin};
                 }
-                this.db.updateOne({serverId:serverId},y,(err)=>{
+                console.log(y);
+                this.serverCollection.updateOne({serverId:serverId},y,(err)=>{
                     if(err){
                         _reject(err);
                     }
@@ -153,9 +163,11 @@ class McstatDatabase extends Database{
                         _resolve();
                     }
                 });
+                console.log("UPDATED");
             }
             catch(ex){
-                _resolve(ex);
+                console.log(ex);
+                _reject(ex);
             }
         });
     }
@@ -216,7 +228,7 @@ class ApiDatabase extends McstatDatabase{
     }
     reEnableServer(serverId){
         return new Promise((_resolve,_reject)=>{
-            this.db.updateOne({"serverId":serverId},{"active":true},(err)=>{
+            this.serverCollection.updateOne({"serverId":serverId},{"active":true},(err)=>{
                 if(err){
                     _reject(err);
                 }

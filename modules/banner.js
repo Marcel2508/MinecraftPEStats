@@ -206,7 +206,7 @@ class BannerServer extends WebServer{
             .catch((ex)=>{
                 console.error(ex);
             });
-            await this.db.updateServerAccessCounter(req.serverId,"lastBannerRequest",req.get("origin"));
+            this.db.updateServerAccessCounter(req.params.serverId,"banner",req.get("origin")).then(()=>{}).catch((ex)=>{console.error(ex);});
         }
         catch(ex){
             this._sendError(res,ex);
@@ -257,7 +257,7 @@ class BannerServer extends WebServer{
             .catch((ex)=>{
                 console.error(ex);
             });
-            await this.db.insertManualAccessCounter(req.params.ip,req.params.port,req.get("origin"),true);
+            this.db.insertManualAccessCounter(req.params.ip,req.params.port,req.get("origin"),true).then(()=>{}).catch((ex)=>{console.error(ex);});
         }
         catch(ex){
             this._sendError(res,ex);
