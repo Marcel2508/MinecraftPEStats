@@ -72,31 +72,7 @@
         <div id="outputContainer">
         </div>
         <br/>
-        <h4><b>HOWTO:</b> Embed it to your Website:</h4><br/>
-        Include the following to your Website's head:<br/>
-        <code>&lt;script type=&quot;text/javascript&quot; src=&quot;https://mcstats.sol4it.de/embed/{YOUR_SERVER_ID}.js&quot;&gt;&lt;/script&gt;</code>
-        <br/><br/><br/>
-        Use the following functions (provided by the script above) to generate Player Tables and Charts:<br/><br/>
-        <b>To render a table with Players Playtime:</b><br/>
-        <code>mcPlayerStats.makePlayerList("yourTableElement","today",10);</code><br/>
-        - The first argument has to be the table element (or ID) you want to apply the rendering to.<br>
-        - The second argument has to be the wanted timespan to display (Available Timespans: "today","week","month")<br/>
-        - The third argument is the amount of Players to be displayed<br/><br/>
-
-        <b>To render a chart with Players online history:</b><br/>
-        <code>mcPlayerStats.makeOnlineChart("yourSVGelement","today");</code><br/>
-        - The first argument has to be the SVG element (or ID) you want to apply the rendering to.<br>
-        - The second argument has to be the wanted timespan to display (Available Timespans: "today","week","month")<br/><br/>
         
-        <b>To get ServerInfo (like Plugins, Version etc):</b><br/>
-        <code>mcPlayerStats.getServerInfo(callbackFn);</code><br/>
-        - The first argument has to be an callback, which will get 2 arguments passed. 1: An Error object, if an error occured, 2: The Server-Info as a regular object<br><br/>
-
-        <b>Pleas note:</b>  The table and Charts are meant to be styled by YOU. The table got it's own classNames and stuff. Use CSS to style it like you want.
-        <br/><br/>
-        <h5>DEMO PAGE: <a href="http://sol4it.de/mcstat/demo.html" target="_blank">DEMO FOR grandtheft.mcpe.me</a></h5>
-        <br/><br/><br/>
-        <h5><a href="/apidoc/">API DOCUMENTATION</a></h5><br/><br/>
       </div>
       <span style="text-align:center;display:block;">&copy; 2018 <a href="http://sol4it.de" target="_blank">Marcel Aust</a> - Not affiliated with Mojang or Microsoft</span>
   </body>

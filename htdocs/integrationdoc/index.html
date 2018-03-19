@@ -1,0 +1,166 @@
+<!Doctype html>
+<html lang="en">
+  <head>
+    <title>Minecraft Player Statistics API - Documentation</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      window.onload=function(){
+          var check = function(){
+            $(".targetScroller").each(function(){
+                var me = $(this);
+                var target = $(me.attr("href"));
+                if(target){
+                    var pos = target.offset().top-$(window).scrollTop();
+                    if(pos<$(window).outerHeight()/3&&pos>0-target.height()+100){
+                        me.parent().addClass("bg-secondary");
+                    }
+                    else{
+                        me.parent().removeClass("bg-secondary");
+                    }
+                }
+            });
+          };
+
+        $(window).on("scroll",check);
+      };
+    </script>
+    <style type="text/css">
+        #menu{
+            position:fixed;
+            z-index:1;
+        }
+        @media screen and (max-width: 1525px)
+        {
+            #menu{
+                left:0px;
+            }
+        }
+        @media screen and (max-width: 1490px)
+        {
+            #menu{
+                position: relative;
+                left:auto;
+            }
+        }
+    </style>
+  </head>
+  <body>
+      <div class="container-fluid">
+        <div class="row">
+            <div class="col-0 d-none d-md-flex col-md-2 bg-dark text-light pt-3">
+                <!-- MENU -->
+                <div id="menu">
+                    <h4 class="pt-5 pl-3">API</h5>
+                    <ul style="list-style-type: none;">
+                        <li class="p-2 rounded"><a class="text-white targetScroller" style="text-decoration: none;" href="#2">Embedding</a></li>
+                        <li class="p-2 rounded"><a href="#3" class="text-white targetScroller" style="text-decoration: none;">Rendering a table</a></li>
+                        <li class="p-2 rounded"><a href="#4" class="text-white targetScroller" style="text-decoration: none;">Rendering a chart</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-md-10 pt-3">
+                <!-- CONTENT -->
+                <div class="container-fluid pb-5 pt-5" id="1">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">Introduction</h4>
+                    <p>
+                        This document is designed to teach you how to easily integrate the Chart, and the Player's played time table into your website.<br/>
+                        You must know a bit about JavaScript, CSS and HTML in order to use this methods. A pre-generated website you can just link to will follow later.<br/>
+                        Please note, that we might change any of this features anytimes. So please check this page here regulary for updates.
+                    </p>
+                </div>
+                <div class="container-fluid pb-5 pt-5" id="2">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">1. Embedding the Javascript file</h4>
+                    <p>
+                       In order to use the functions down below, you need to include the following JavaScript file to your website. Replace {serverId} with the Id you've got when registering your server.
+                        <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Including the js file</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+&lt;script type=&quot;text/javascript&quot; src=&quot;https://mcstats.sol4it.de/embed/<b>{serverID}</b>.js&quot;&gt;&lt;/script&gt;
+</pre>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <div class="container-fluid pb-5 pt-5" id="3">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">2. Using the Table generator</h4>
+                    <p>
+                       You can generate a Table with players ranked by their online time count in a give period.
+                       You can specify the time period as the second argument to the function.<br/>
+                       The first argument has to be the table element or the Id of the target table element you want to render the player list in.<br/>
+                       The second argument should be a valid timespan indicator like "hour","day","week","month"
+                       <br/>The Third argument specifies the maximum limit which should be displayed. It defaults to 10.
+                       <br/>The fourth and fifth arguments can be used to define functions for formatting data.<br/>
+                       The library comes with default formatting functions shipped already, so you don't need to use this. If you don't want to use it, you can just pass null.<br/>
+                       The first function gets the minute count of the current player passed. It should return a formatted string to be displayed in the table.<br/>
+                       The second function gets the lastOnline date together with the selected timespan passed. It should return a formatted string aswell.<br/>
+                       Last but not least, you cann pass a sixth argument, which should be a function to be called after rendering is done.
+                        <br/><br/>
+                        <b>Please note:</b> The raw table looks kinda ugly. It is meant to be styled by you. It got serveral classes to be adjusted in css.
+                       <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Using the Table generation</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+    mcstats.makeTable("myCoolTableElement","week",5,null,null,function(){
+        console.log("Yeah my Table is ready :-)");
+    });
+</pre>
+                            </div>
+                        </div>
+                        <div class="card border-success mt-3">
+                            <div class="card-header">
+                                <b>Example output</b>
+                            </div>
+                            <div class="card-body">
+                                <table id="test" class="mcstats-table mcstats-timespan-month"><thead><tr><th class="mcstats-title-playername">Playername</th><th class="mcstats-title-playedtime">Time played</th><th class="mcstats-title-lastonline">Last online</th></tr></thead><tbody><tr><td class="mcstats-body-playername">PhoebeHopesEvan</td><td class="mcstats-body-playedtime">01:19 Hours</td><td>2018-03-17 19:50</td></tr><tr><td class="mcstats-body-playername">KaneTheWaterFist</td><td class="mcstats-body-playedtime">01:06 Hours</td><td>2018-03-17 19:50</td></tr><tr><td class="mcstats-body-playername">PaperClip_</td><td class="mcstats-body-playedtime">55 Minutes</td><td>2018-03-17 19:50</td></tr><tr><td class="mcstats-body-playername">SUGAESTEPH</td><td class="mcstats-body-playedtime">47 Minutes</td><td>2018-03-17 19:50</td></tr><tr><td class="mcstats-body-playername">CodyGarrothsSon6</td><td class="mcstats-body-playedtime">44 Minutes</td><td>2018-03-17 19:50</td></tr><tr><td class="mcstats-body-playername">saraline</td><td class="mcstats-body-playedtime">44 Minutes</td><td>2018-03-17 19:06</td></tr><tr><td class="mcstats-body-playername">TeonyskidLey</td><td class="mcstats-body-playedtime">44 Minutes</td><td>2018-03-18 21:57</td></tr><tr><td class="mcstats-body-playername">KcDaughter_Mina</td><td class="mcstats-body-playedtime">44 Minutes</td><td>2018-03-17 19:50</td></tr><tr><td class="mcstats-body-playername">BenPDH</td><td class="mcstats-body-playedtime">40 Minutes</td><td>2018-03-17 18:55</td></tr><tr><td class="mcstats-body-playername">Zackereno</td><td class="mcstats-body-playedtime">37 Minutes</td><td>2018-03-17 17:56</td></tr></tbody></table>
+                            </div>
+                        </div>
+                    </p>
+                </div>
+                <div class="container-fluid pb-5 pt-5" id="4">
+                    <h4 class="bg-secondary rounded text-light p-1 pt-2 pb-2">3. Using the chart generator</h4>
+                    <p>
+                       You can generate a chart to display online players over time.<br/>
+                       The function requires 3 arguments at max.<br/>
+                       The first argument should be the target SVG element, or the ID of the SVG element you want to render the chart in.<br/>
+                       The second argument should be the timespan you want to display. Eg: "hour","day","week","month".<br/>
+                       The third argument can be a function to be called once the chart is rendered.<br/><br/>
+                       <b>Please note:</b> The function will include third party libraries like d3.js and nv.js (hosted on cloudflare cdn) to your websites head. 
+                       <div class="card border-primary mt-3">
+                            <div class="card-header">
+                                <b>Using the Chart generation</b>
+                            </div>
+                            <div class="card-body">
+<pre class="text-secondary">
+    mcstats.makeChart("myCoolSVGElement","week"function(){
+        console.log("Yeah my Chart is ready :-)");
+    });
+</pre>
+                            </div>
+                        </div>
+                        <div class="card border-success mt-3">
+                            <div class="card-header">
+                                <b>Example output</b>
+                            </div>
+                            <div class="card-body">
+                                <img src="data:image/jpeg;base64,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">
+                            </div>
+                        </div>
+                    </p>
+                </div>
+
+                <span style="text-align:center;display:block;">&copy; 2018 <a href="http://sol4it.de" target="_blank">Marcel Aust</a> - Not affiliated with Mojang or Microsoft</span>
+            </div>
+        </div>
+      </div>
+  </body>
+</html>
