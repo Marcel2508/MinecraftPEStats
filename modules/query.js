@@ -107,12 +107,20 @@ class Query{
         }
         return false;
     }
-    checkIsServerOverNoWebContactTime(lastApiRequest,lastBannerRequest){
+    _compareDateDiffOver(din){
+        return new Date()-new Date(din)>this.config.setDisabledWebTimeout;
+    }
+    //SHOULD BE WORKING NOW... (2018-03-27)
+    checkIsServerOverNoWebContactTime(created,lastApiRequest,lastBannerRequest){
         var d = new Date();
-        if(d-new Date(lastApiRequest)>this.config.setDisabledWebTimeout&&d-new Date(lastBannerRequest)>this.config.setDisabledWebTimeout){
-            return true;
+        if(
+            ((lastApiRequest||lastBannerRequest) &&
+            (!this._compareDateDiffOver(lastApiRequest)||!this._compareDateDiffOver(lastBannerRequest))) ||
+            (!this._compareDateDiffOver(created))
+        ){
+            return false;
         }
-        return false;
+        return true;
     }
 
     _doStatusCheckLastContact(activeServer){
@@ -134,7 +142,7 @@ class Query{
     _doStatusCheckLastWebRequest(activeServer){
         return Promise.all(activeServer.map((server)=>{
             return new Promise(async (_rs,_rj)=>{
-                if(this.checkIsServerOverNoWebContactTime(server.lastApiRequest,server.lastBannerRequest)){
+                if(this.checkIsServerOverNoWebContactTime(server.created,server.lastApiRequest,server.lastBannerRequest)){
                     try{
                         await this.db.setServerDisabled(server.serverId);
                         //TODO: LOG INFO MAYBE?

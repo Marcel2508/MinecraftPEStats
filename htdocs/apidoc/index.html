@@ -89,7 +89,7 @@
                         When your server were offline for over 24 Hours, your server will be disabled! In order to re-enable it again, you can call this request again.<br/>
                         <div class="card border-primary mt-3">
                             <div class="card-header">
-                                <b>Request</b>&nbsp;&nbsp;&nbsp;POST&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/insertServer
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;POST&nbsp;&nbsp;&nbsp;https://mcstats.sol4it.de/api/insertServer
                             </div>
                             <div class="card-body">
 <pre class="text-secondary">
@@ -124,7 +124,7 @@
                         You can query a Server, which hasn't been added to the system yet, by providing Server IP and Port. Please be aware, that we might restrict access to this function when abused.<br/>
                         <div class="card border-primary mt-3">
                             <div class="card-header">
-                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/queryServer/<b>{IP}</b>/<b>{PORT}</b>
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;https://mcstats.sol4it.de/api/queryServer/<b>{IP}</b>/<b>{PORT}</b>
                             </div>
                             <div class="card-body text-secondary">EMPTY</div>
                         </div>
@@ -157,7 +157,7 @@
                         When your Server is already added to the system, you should always prefer this method, becaus it does cost way less performance, and It helps to keep your server actively tracked!<br/>
                         <div class="card border-primary mt-3">
                             <div class="card-header">
-                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/getLastQuery/<b>{serverId}</b>
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;https://mcstats.sol4it.de/api/getLastQuery/<b>{serverId}</b>
                             </div>
                             <div class="card-body text-secondary">EMPTY</div>
                         </div>
@@ -197,7 +197,7 @@
                        This method returns filtered Informations regarding your Server. It contains information like last contact or created date. It also contains Server settings like MOTD oder maxPlayers when query was successfull.<br/>
                         <div class="card border-primary mt-3">
                             <div class="card-header">
-                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/getServerInfo/<b>{serverId}</b>
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;https://mcstats.sol4it.de/api/getServerInfo/<b>{serverId}</b>
                             </div>
                             <div class="card-body text-secondary">EMPTY</div>
                         </div>
@@ -241,7 +241,7 @@
                         You can use Values like "month","week","day" and "hour". This value can be used to render Charts.<br/>
                         <div class="card border-primary mt-3">
                             <div class="card-header">
-                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/getOnlineHistory/<b>{serverId}</b>/<b>{month/week/day/hour}</b>
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;https://mcstats.sol4it.de/api/getOnlineHistory/<b>{serverId}</b>/<b>{month/week/day/hour}</b>
                             </div>
                             <div class="card-body text-secondary">EMPTY</div>
                         </div>
@@ -286,7 +286,7 @@
                         This method returns players played minutes count. You could use this for example for generating leaderboards.<br/>
                         <div class="card border-primary mt-3">
                             <div class="card-header">
-                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/api/getPlayerMinuteCount/<b>{serverId}</b>/<b>{month/week/day/hour}</b>
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;https://mcstats.sol4it.de/api/getPlayerMinuteCount/<b>{serverId}</b>/<b>{month/week/day/hour}</b>
                             </div>
                             <div class="card-body text-secondary">EMPTY</div>
                         </div>
@@ -337,7 +337,7 @@
                         This method returns a PNG image, based on recent queries. You should prefer this method, because it uses less performance.
                         <div class="card border-primary mt-3">
                             <div class="card-header">
-                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/banner/<b>{serverId}</b>.png</b>
+                                <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;https://mcstats.sol4it.de/banner/<b>{serverId}</b>.png</b>
                             </div>
                             <div class="card-body text-secondary">EMPTY</div>
                         </div>
@@ -358,7 +358,7 @@
                             This method returns a PNG image. This method fetches the server query in realtime, which can cause a slight delay. You should prefer the above method, because this might get removed when abused!
                             <div class="card border-primary mt-3">
                                 <div class="card-header">
-                                    <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;http://mcstats.sol4it.de/banner/<b>{serverIP}</b>/<b>{serverPort}</b>.png</b>
+                                    <b>Request</b>&nbsp;&nbsp;&nbsp;GET&nbsp;&nbsp;&nbsp;https://mcstats.sol4it.de/banner/<b>{serverIP}</b>/<b>{serverPort}</b>.png</b>
                                 </div>
                                 <div class="card-body text-secondary">EMPTY</div>
                             </div>

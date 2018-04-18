@@ -1,59 +1,38 @@
-const ApiServer = require("./modules/api.js");
-const QueryTask = require("./modules/query.js");
-const BannerServer = require("./modules/banner.js");
-const FrontEndWeb = require("./modules/web.js");
+/**
+ * (c) 2018 Marcel Aust
+ * This file is the main entry point for the Statistics & Banner service.
+ * There are a few commandline arguments available.
+ * use --help for help
+ */
+const argparser = require("argparse").ArgumentParser;
+const parser = new argparser({
+    version:"0.0.1",
+    addHelp:true,
+    description:"A minecraft PE statistics API & Banner service"
+})
 
-const api = new ApiServer.ApiServer({
-    "port":8080,
-    "mongoConnection":"mongodb://mongodb:27017",
-    "mongoDb":"mcstat",
-    "queryInterval":360000
+parser.addArgument(["-a","--all"],{
+    help:"Start all service components"
+});
+parser.addArgument(["-api","--start-api"],{
+    help:"Start the API-Server in single instance with another database connection"
+});
+parser.addArgument(["-banner","--start-banner"],{
+    help:"Start the Banner-Server in single instance with another database connection"
+});
+parser.addArgument(["-query","--start-query"],{
+    help:"Start the Query-Service in single instance with another database connection"
+});
+parser.addArgument(["-webserver","--start-webserver"],{
+    help:"Start the Webserver-Server in single instance"
+});
+parser.addArgument(["-odb","--use-single-db"],{
+    help:"Start the above Services with single DB instance (not compatible with clustering)"
+});
+parser.addArgument(["-cluster","--use-cluster"],{
+    help:"Start the Banner-Server in single instance with another database connection"
 });
 
-const queryTask = new QueryTask.Query({
-    "interval":360000,
-    "statusInterval":21600000,
-    "timeout":3000,
-    "mongoConnection":"mongodb://mongodb:27017",
-    "mongoDb":"mcstat",
-    "setDisabledTimeout":24*60*60*1000,
-    "setDisabledWebTimeout":72*60*60*1000
-}); 
 
-const bannerServer = new BannerServer.BannerServer({
-    "port":8081,
-    "mongoConnection":"mongodb://mongodb:27017",
-    "mongoDb":"mcstat",
-    "queryInterval":360000
-});
-
-const frontendWebServer = new FrontEndWeb.Web({
-    "port":8082,
-    "apiServerUrl":"http://localhost"
-});
-
-const run = async function run(){
-    try{
-        await api.start();
-        await api.registerListener();
-        console.log("API STARTED!");
-        await queryTask.start();
-        console.log("Query Task started!")
-
-        await bannerServer.start();
-        await bannerServer.registerListener();
-        console.log("BANNER-SERVICE STARTED!");
-
-        await frontendWebServer.start();
-        await frontendWebServer.registerListener();
-        console.log("Frontend-Service Started!")
-
-        console.log("SERVER ONLINE...");        
-
-    }
-    catch(ex){
-        console.error("ERROR STARTING API:");
-        console.error(ex);
-    }
-}
-run();
+var args = parser.parseArgs();
+console.log(args)

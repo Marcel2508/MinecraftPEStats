@@ -138,7 +138,6 @@ class McstatDatabase extends Database{
     updateServerAccessCounter(serverId,counterType,origin){
         return new Promise(async (_resolve,_reject)=>{
             try{
-                console.log(serverId,counterType,origin);
                 var counterName = "apiRequestCount";
                 var lastName = "lastApiRequest";
                 if(counterType=="banner"){
@@ -154,7 +153,6 @@ class McstatDatabase extends Database{
                 if(origin&&!sdata.webOrigins.find((x)=>{return x.toLowerCase()==origin.toLowerCase();})){
                     y["$push"]={"webOrigins":origin};
                 }
-                console.log(y);
                 this.serverCollection.updateOne({serverId:serverId},y,(err)=>{
                     if(err){
                         _reject(err);
@@ -163,10 +161,8 @@ class McstatDatabase extends Database{
                         _resolve();
                     }
                 });
-                console.log("UPDATED");
             }
             catch(ex){
-                console.log(ex);
                 _reject(ex);
             }
         });
@@ -228,7 +224,7 @@ class ApiDatabase extends McstatDatabase{
     }
     reEnableServer(serverId){
         return new Promise((_resolve,_reject)=>{
-            this.serverCollection.updateOne({"serverId":serverId},{"active":true},(err)=>{
+            this.serverCollection.updateOne({"serverId":serverId},{"active":true,"lastApiRequest":new Date()},(err)=>{
                 if(err){
                     _reject(err);
                 }

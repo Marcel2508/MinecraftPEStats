@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "argparse": "^1.0.10",
     "async": "^2.6.0",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",

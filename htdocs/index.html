@@ -10,7 +10,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script type="text/javascript">
       function insertServer(){
-        var API_SERVER = "https://mcstat.sol4it.de/api/";
+        var API_SERVER = "https://mcstats.sol4it.de/api/";
         document.getElementById("submitB").setAttribute("disabled",true);
         var ip = document.getElementById("ipInput").value;
         var port = document.getElementById("portInput").value;
@@ -51,6 +51,22 @@
         request.send(JSON.stringify({serverHost:ip,serverPort:port}));
       }
     </script>
+    <style type="text/css">
+      .bigger-list{
+        list-style-type: none;
+        padding-left:0px;
+      }
+      .bigger-list li::before{
+        content: '>';
+        color: #FF0000;
+        font-size:20px;
+        margin-right:10px;
+      }
+      .bigger-list li{
+        font-size:20px;
+        padding-bottom:10px;
+      }
+    </style>
   </head>
   <body>
       <div class="container">
@@ -72,7 +88,17 @@
         <div id="outputContainer">
         </div>
         <br/>
-        
+        <p>* By inserting your server you agree to our <a href="/tos" target="_blank">Terms of Service</a>. Your server might be deleted or disabled at any time without any reason.<br/>This service is still in an early ALPHA state - Please keep in mind, that anything could change at any time!</p>
+        <br/>
+        <h3>Documentation:</h3><br/>
+        <ul class="bigger-list">
+          <li><a href ="/apidoc" target="_blank">API Documentation</a></li>
+          <li><a href="/integrationdoc" target="_blank">Integrate the charts into your website</a></li>
+          <li><a href="/apidoc#8" target="_blank">Banner generator</a></li>
+        </ul><br/><br/>
+        <h3>Additional Info:</h3>
+        <p>You can help contribute to this project at GitHub: <a href="https://github.com/Marcel2508/MinecraftPEStats" target="_blank">MinecraftPEStats on GitHub</a></p>
+        <br/><br/>
       </div>
       <span style="text-align:center;display:block;">&copy; 2018 <a href="http://sol4it.de" target="_blank">Marcel Aust</a> - Not affiliated with Mojang or Microsoft</span>
   </body>
